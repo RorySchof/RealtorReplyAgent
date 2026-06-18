@@ -13,29 +13,24 @@ const REQUIRED_KEYS = ["action_items", "client_questions", "followup_items", "re
 
 // --- REAL LLM CALL (GROQ) ---
 async function callGroqLLM(inputText) {
-  const apiKey = import.meta.env.VITE_GROQ_API_KEY;
+  const messages = [
+    { role: "system", content: SYSTEM_PROMPT },
+    { role: "user", content: inputText }
+  ];
 
-  if (!apiKey) {
-    throw new Error("Missing Groq API key");
-  }
-
-  const body = {
-    model: MODEL,
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: inputText }
-    ],
-    temperature: 0.2
-  };
-
-  return fetch(GROQ_URL, {
+  const response = await fetch("/api/groq-proxy", {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${apiKey}`,
       "Content-Type": "application/json"
     },
-    body: JSON.stringify(body)
+    body: JSON.stringify({ messages })
   });
+
+  if (!response.ok) {
+    throw new Error("Proxy request failed");
+  }
+
+  return response;
 }
 
 // --- MOCK FALLBACK (unchanged) ---
