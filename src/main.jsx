@@ -10,3 +10,10 @@ createRoot(document.getElementById('root')).render(
     </BrowserRouter>
   </StrictMode>
 );
+
+// Register SW
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js").catch((err) => {
+    console.error("SW registration failed:", err);
+  });
+}
