@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { processMessage } from '../agent';
 import OutputSection from '../components/OutputSection';
+
 
 const STORAGE_KEY = 'realtor-reply-agent-last-output';
 
@@ -19,26 +20,33 @@ export default function Share() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const canShare = typeof navigator !== 'undefined' && !!navigator.share;
+  const hasRunRef = useRef(false);
 
   useEffect(() => {
     const sharedText = searchParams.get('text');
-
-    if (sharedText) {
-      runProcess(sharedText);
+  
+    // If no text, load from localStorage
+    if (!sharedText) {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          setOutput(parsed);
+          setReplyText(parsed.reply || '');
+        } catch {
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      }
       return;
     }
-
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setOutput(parsed);
-        setReplyText(parsed.reply || '');
-      } catch {
-        localStorage.removeItem(STORAGE_KEY);
-      }
-    }
+  
+    // ⭐ Prevent double execution in React Strict Mode
+    if (hasRunRef.current) return;
+    hasRunRef.current = true;
+  
+    runProcess(sharedText);
   }, [searchParams]);
+  
 
   async function runProcess(inputText) {
     setLoading(true);

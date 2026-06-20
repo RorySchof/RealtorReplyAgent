@@ -1,8 +1,56 @@
+
 // src/agent.js
 
-const SYSTEM_PROMPT = `You are a professional and warm real estate assistant.
-Infer missing steps. Return ONLY strict JSON with keys:
-action_items, client_questions, followup_items, reply.`;
+const SYSTEM_PROMPT = `
+You are a professional real estate assistant. Your job is to interpret messy, informal, or unclear client messages and convert them into structured next steps for a realtor.
+
+Your primary mission:
+- Extract the client’s intent and produce a structured JSON object with actionable next steps.
+
+Your secondary mission:
+- Write a warm, concise, professional realtor-style reply based strictly on the client’s message.
+
+Behavior rules:
+- Stay calm, neutral, and structured even if the client is emotional, overwhelmed, or unclear.
+- Do NOT mirror the client’s stress, panic, or emotional tone.
+- Do NOT provide reassurance, opinions, or speculation. Your job is extraction, not therapy.
+- Treat each property mentioned as its own thread. Never merge concerns across properties.
+- If the message is unclear or incomplete, extract the most reasonable interpretation and ask clarifying questions in "client_questions".
+
+Field definitions:
+- action_items: Tasks the realtor must do next. These must be concrete, external actions.
+- client_questions: Clarifying questions the realtor should ask the client based on missing information. 
+  - Never repeat questions the client already asked.
+  - Never invent generic buyer-intake questions.
+  - Only include questions that help the realtor move forward.
+- followup_items: Additional next steps the realtor should take after the initial actions.
+- reply: A warm, concise, professional realtor-style message addressing the client’s concerns.
+
+Hard constraints:
+- Output ONLY a single valid JSON object.
+- No text before it.
+- No text after it.
+- No explanations.
+- No markdown.
+- No code fences.
+- No comments.
+- No blank lines outside the JSON.
+- Arrays must contain strings only.
+- All four fields must always be present.
+- Never invent new fields.
+- Never omit fields.
+
+The JSON must have EXACTLY this structure:
+
+{
+  "action_items": ["string"],
+  "client_questions": ["string"],
+  "followup_items": ["string"],
+  "reply": "string"
+}
+
+`;
+
 
 // Groq endpoint + model
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
@@ -10,6 +58,37 @@ const MODEL = "llama-3.1-70b-versatile";
 
 // Required JSON keys
 const REQUIRED_KEYS = ["action_items", "client_questions", "followup_items", "reply"];
+
+// --- ULTRA-FORGIVING JSON EXTRACTION ---
+function extractJson(text) {
+  const firstBrace = text.indexOf("{");
+  const lastBrace = text.lastIndexOf("}");
+
+  if (firstBrace === -1 || lastBrace === -1 || lastBrace <= firstBrace) {
+    throw new Error("No JSON object found");
+  }
+
+  let jsonString = text.slice(firstBrace, lastBrace + 1).trim();
+
+  if (jsonString.startsWith('"') && jsonString.endsWith('"')) {
+    try {
+      jsonString = JSON.parse(jsonString);
+    } catch { }
+  }
+
+  jsonString = jsonString.replace(/```json|```/g, "").trim();
+
+  return jsonString;
+}
+
+function autoFill(parsed) {
+  return {
+    action_items: Array.isArray(parsed.action_items) ? parsed.action_items : [],
+    client_questions: Array.isArray(parsed.client_questions) ? parsed.client_questions : [],
+    followup_items: Array.isArray(parsed.followup_items) ? parsed.followup_items : [],
+    reply: typeof parsed.reply === "string" ? parsed.reply : ""
+  };
+}
 
 // --- REAL LLM CALL (GROQ) ---
 async function callGroqLLM(inputText) {
@@ -66,8 +145,14 @@ function validateOutput(parsed) {
   return parsed;
 }
 
-// --- MAIN ENTRY POINT (updated to use Groq) ---
+// --- MAIN ENTRY POINT (updated with extractor + autofill) ---
 export async function processMessage(inputText) {
+  // ⭐ Sanitize incoming text to avoid curly quotes, weird whitespace, etc.
+  inputText = inputText
+    .trim()
+    .replace(/[\u201C\u201D]/g, '"')   // curly double quotes → "
+    .replace(/[\u2018\u2019]/g, "'")  // curly single quotes → '
+    .replace(/\s+/g, ' ');            // collapse weird whitespace
   let response;
 
   try {
@@ -82,12 +167,52 @@ export async function processMessage(inputText) {
 
   const text = await response.text();
 
+  console.log("RAW GROQ RESPONSE:", text);
+
   let parsed;
   try {
-    parsed = JSON.parse(text);
+    let extractSource = text;
+
+    // Try to parse the outer envelope safely
+    try {
+      const envelope = JSON.parse(text);
+      const content = envelope?.choices?.[0]?.message?.content;
+
+      // If the model returned content, use ONLY that
+      if (typeof content === "string") {
+        extractSource = content.trim();
+      }
+    } catch {
+      // If outer JSON fails, fall back to raw text
+      extractSource = text.trim();
+    }
+
+    // Now extract ONLY the inner JSON object
+    const cleaned = extractJson(extractSource).trim();
+
+    // Parse the inner JSON safely
+    parsed = JSON.parse(cleaned);
+
   } catch {
     throw new Error("Invalid JSON");
   }
 
+  const normalize = (str) =>
+    typeof str === "string"
+      ? str
+        .replace(/[\u201C\u201D]/g, '"')   // curly double quotes → "
+        .replace(/[\u2018\u2019]/g, "'")  // curly single quotes → '
+      : str;
+
+  for (const key of Object.keys(parsed)) {
+    if (typeof parsed[key] === "string") {
+      parsed[key] = normalize(parsed[key]);
+    }
+    if (Array.isArray(parsed[key])) {
+      parsed[key] = parsed[key].map(normalize);
+    }
+  }
+
+  parsed = autoFill(parsed);
   return validateOutput(parsed);
 }
