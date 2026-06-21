@@ -1,9 +1,7 @@
-import { buffer } from 'micro';
-import qs from 'querystring';
 
 export const config = {
   api: {
-    bodyParser: false, // Required for Mailgun: we need the raw body
+    bodyParser: false, // Required for Mailgun
   },
 };
 
@@ -13,15 +11,18 @@ export default async function handler(req, res) {
   }
 
   try {
-    const rawBody = (await buffer(req)).toString();
-    const data = qs.parse(rawBody);
+    // Vercel gives us the raw body as a Buffer when bodyParser is disabled
+    const rawBody = await getRawBody(req);
+    const text = rawBody.toString();
+
+    // Mailgun sends x-www-form-urlencoded
+    const data = Object.fromEntries(new URLSearchParams(text));
 
     console.log("Mailgun inbound email:", {
       from: data.sender,
       subject: data.subject,
       bodyPlain: data['body-plain'],
       bodyHtml: data['body-html'],
-      attachments: data.attachments,
     });
 
     return res.status(200).json({ ok: true });
@@ -29,4 +30,13 @@ export default async function handler(req, res) {
     console.error("Mailgun inbound error:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
+}
+
+function getRawBody(req) {
+  return new Promise((resolve, reject) => {
+    let chunks = [];
+    req.on("data", chunk => chunks.push(chunk));
+    req.on("end", () => resolve(Buffer.concat(chunks)));
+    req.on("error", reject);
+  });
 }
