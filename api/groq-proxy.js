@@ -6,16 +6,24 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { messages } = req.body;
+    // Accept either { messages } or { message }
+    const { messages, message } = req.body;
 
-    // ⭐ Debug log — this tells us if your .env key is being loaded
     console.log("Proxy running, key exists:", !!process.env.GROQ_API_KEY);
 
     const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
+    // Normalize input into a valid Groq messages array
+    const normalizedMessages = messages || [
+      {
+        role: "user",
+        content: message || "No message provided",
+      },
+    ];
+
     const completion = await groq.chat.completions.create({
       model: "llama-3.1-8b-instant",
-      messages,
+      messages: normalizedMessages,
       temperature: 0.2,
     });
 
