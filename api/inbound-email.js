@@ -52,6 +52,12 @@ export default async function handler(req, res) {
       agent = JSON.parse(raw);
     } catch (e) {
       console.error("Failed to parse Groq JSON:", raw);
+      console.error("PARSE ERROR:", e.name, e.message);
+      console.error("RAW LENGTH:", raw.length);
+      console.error("RAW START:", raw.slice(0, 30));
+      console.error("RAW END:", raw.slice(-20));
+      console.error("SYSTEM PROMPT START:", process.env.SYSTEM_PROMPT.slice(0, 50));
+      console.error("SYSTEM PROMPT END:", process.env.SYSTEM_PROMPT.slice(-50));
       agent = {};
     }
 
