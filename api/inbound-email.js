@@ -1,6 +1,5 @@
 //inbound-email.js
 
-import getRawBody from "raw-body";
 
 export const config = {
   api: {
@@ -167,3 +166,11 @@ function extractForwardedMessage(body) {
   return lines.slice(blankIndex + 1).join('\n').trim();
 }
 
+function getRawBody(req) {
+  return new Promise((resolve, reject) => {
+    let chunks = [];
+    req.on("data", chunk => chunks.push(chunk));
+    req.on("end", () => resolve(Buffer.concat(chunks)));
+    req.on("error", reject);
+  });
+}
