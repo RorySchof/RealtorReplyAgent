@@ -51,14 +51,15 @@ export default async function handler(req) {
     // --- EXTRACT JSON OBJECT FROM MODEL OUTPUT ---
     let parsed;
     try {
-      const jsonMatch = content.match(/\{[\s\S]*?\}/);
+      const jsonMatch = rawText.match(/\{[\s\S]*?\}/);
 
 
       if (!jsonMatch) {
         console.error("NO JSON OBJECT FOUND IN MODEL OUTPUT");
-        console.error("MODEL CONTENT START:", content.slice(0, 200));
-        console.error("MODEL CONTENT END:", content.slice(-200));
+        console.error("MODEL CONTENT START:", rawText.slice(0, 200));
+        console.error("MODEL CONTENT END:", rawText.slice(-200));
         parsed = {};
+
       } else {
         const jsonString = jsonMatch[0];
 
