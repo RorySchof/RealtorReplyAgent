@@ -30,36 +30,41 @@ export default async function handler(req, res) {
     // --- CALL GROQ PROXY ---
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `https://${process.env.VERCEL_URL}`;
 
+    const groqMessages = [
+      { role: "system", content: process.env.SYSTEM_PROMPT },
+      { role: "user", content: cleanMessage }
+    ];
+    logMessagesDiagnostics("inbound-email outbound to groq-proxy", groqMessages);
+    console.log("[DIAG] inbound-email — SYSTEM_PROMPT source: process.env.SYSTEM_PROMPT");
+    console.log("[DIAG] inbound-email — SYSTEM_PROMPT length:", process.env.SYSTEM_PROMPT?.length ?? 0);
+    console.log("[DIAG] inbound-email — SYSTEM_PROMPT hash:", diagHash(process.env.SYSTEM_PROMPT));
+    console.log("[DIAG] inbound-email — cleanMessage length:", cleanMessage.length);
+
     const proxyRes = await fetch(`${baseUrl}/api/groq-proxy`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        messages: [
-          { role: "system", content: process.env.SYSTEM_PROMPT },
-          { role: "user", content: cleanMessage }
-        ]
-      })
+      body: JSON.stringify({ messages: groqMessages })
     });
+
+    console.log("[DIAG] inbound-email — groq-proxy HTTP status:", proxyRes.status);
 
     const completion = await proxyRes.json();
     console.log("Groq completion envelope:", completion);
+    console.log("[DIAG] inbound-email — proxy response top-level keys:", Object.keys(completion ?? {}));
+    console.log("[DIAG] inbound-email — proxy response has parsed:", "parsed" in (completion ?? {}));
+    console.log("[DIAG] inbound-email — proxy response has completion:", "completion" in (completion ?? {}));
+    console.log("[DIAG] inbound-email — proxy parsed keys:", Object.keys(completion?.parsed ?? {}));
+    console.log(
+      "[DIAG] inbound-email — proxy completion.choices[0].message.content length:",
+      completion?.completion?.choices?.[0]?.message?.content?.length ?? null
+    );
+    console.log(
+      "[DIAG] inbound-email — proxy completion.choices[0].message.content:",
+      completion?.completion?.choices?.[0]?.message?.content ?? null
+    );
 
     // --- EXTRACT MODEL OUTPUT ---
-    const raw = completion?.choices?.[0]?.message?.content || "{}";
-
-    let agent;
-    try {
-      agent = JSON.parse(raw);
-    } catch (e) {
-      console.error("Failed to parse Groq JSON:", raw);
-      console.error("PARSE ERROR:", e.name, e.message);
-      console.error("RAW LENGTH:", raw.length);
-      console.error("RAW START:", raw.slice(0, 30));
-      console.error("RAW END:", raw.slice(-20));
-      console.error("SYSTEM PROMPT START:", process.env.SYSTEM_PROMPT.slice(0, 50));
-      console.error("SYSTEM PROMPT END:", process.env.SYSTEM_PROMPT.slice(-50));
-      agent = {};
-    }
+    const agent = completion.parsed;
 
     console.log("Parsed agent JSON:", agent);
 
@@ -140,6 +145,31 @@ mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}&body=
 }
 
 // --- HELPERS ---------------------------------------------------
+
+// Diagnostic-only: fingerprint strings for log correlation (no functional use).
+function diagHash(str) {
+  if (str == null) return null;
+  const s = String(str);
+  let h = 0;
+  for (let i = 0; i < s.length; i++) {
+    h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  }
+  return (h >>> 0).toString(16);
+}
+
+function logMessagesDiagnostics(label, messages) {
+  console.log(`[DIAG] ${label} — full messages array:`, JSON.stringify(messages));
+  messages.forEach((m, i) => {
+    const c = m.content ?? "";
+    const contentStr = typeof c === "string" ? c : JSON.stringify(c);
+    console.log(`[DIAG] ${label} — message[${i}] role=${m.role} contentLength=${contentStr.length}`);
+    console.log(`[DIAG] ${label} — message[${i}] contentStart:`, contentStr.slice(0, 200));
+    console.log(`[DIAG] ${label} — message[${i}] contentEnd:`, contentStr.slice(-200));
+    if (m.role === "system") {
+      console.log(`[DIAG] ${label} — system prompt length=${contentStr.length} hash=${diagHash(contentStr)}`);
+    }
+  });
+}
 
 function extractForwardedMessage(body) {
   if (!body || typeof body !== 'string') {

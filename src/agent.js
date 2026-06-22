@@ -59,6 +59,31 @@ const MODEL = "llama-3.1-70b-versatile";
 // Required JSON keys
 const REQUIRED_KEYS = ["action_items", "client_questions", "followup_items", "reply"];
 
+// Diagnostic-only: fingerprint strings for log correlation (no functional use).
+function diagHash(str) {
+  if (str == null) return null;
+  const s = String(str);
+  let h = 0;
+  for (let i = 0; i < s.length; i++) {
+    h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  }
+  return (h >>> 0).toString(16);
+}
+
+function logMessagesDiagnostics(label, messages) {
+  console.log(`[DIAG] ${label} — full messages array:`, JSON.stringify(messages));
+  messages.forEach((m, i) => {
+    const c = m.content ?? "";
+    const contentStr = typeof c === "string" ? c : JSON.stringify(c);
+    console.log(`[DIAG] ${label} — message[${i}] role=${m.role} contentLength=${contentStr.length}`);
+    console.log(`[DIAG] ${label} — message[${i}] contentStart:`, contentStr.slice(0, 200));
+    console.log(`[DIAG] ${label} — message[${i}] contentEnd:`, contentStr.slice(-200));
+    if (m.role === "system") {
+      console.log(`[DIAG] ${label} — system prompt length=${contentStr.length} hash=${diagHash(contentStr)}`);
+    }
+  });
+}
+
 // --- ULTRA-FORGIVING JSON EXTRACTION ---
 function extractJson(text) {
   const firstBrace = text.indexOf("{");
@@ -96,6 +121,11 @@ async function callGroqLLM(inputText) {
     { role: "system", content: SYSTEM_PROMPT },
     { role: "user", content: inputText }
   ];
+
+  logMessagesDiagnostics("agent.js outbound to groq-proxy", messages);
+  console.log("[DIAG] agent.js — SYSTEM_PROMPT source: inline SYSTEM_PROMPT constant");
+  console.log("[DIAG] agent.js — SYSTEM_PROMPT length:", SYSTEM_PROMPT.length);
+  console.log("[DIAG] agent.js — SYSTEM_PROMPT hash:", diagHash(SYSTEM_PROMPT));
 
   const response = await fetch("/api/groq-proxy", {
     method: "POST",
@@ -149,11 +179,15 @@ function validateOutput(parsed) {
 
 
 export async function processMessage(inputText) {
+  console.log("[DIAG] agent.js — processMessage input length (before sanitize):", inputText?.length ?? 0);
+
   inputText = inputText
     .trim()
     .replace(/[\u201C\u201D]/g, '"')
     .replace(/[\u2018\u2019]/g, "'")
     .replace(/\s+/g, " ");
+
+  console.log("[DIAG] agent.js — processMessage input length (after sanitize):", inputText.length);
 
   let response;
 
@@ -169,6 +203,17 @@ export async function processMessage(inputText) {
 
   // ⭐ NEW: read parsed JSON directly from proxy
   const data = await response.json();
+  console.log("[DIAG] agent.js — proxy response top-level keys:", Object.keys(data ?? {}));
+  console.log("[DIAG] agent.js — extraction path: data.parsed (from groq-proxy)");
+  console.log("[DIAG] agent.js — data.parsed:", data.parsed);
+  console.log(
+    "[DIAG] agent.js — data.completion.choices[0].message.content:",
+    data.completion?.choices?.[0]?.message?.content ?? null
+  );
+  console.log(
+    "[DIAG] agent.js — data.completion.choices[0].message.content length:",
+    data.completion?.choices?.[0]?.message?.content?.length ?? null
+  );
   let parsed = data.parsed || {};
 
   // Normalize curly quotes etc.
@@ -187,80 +232,8 @@ export async function processMessage(inputText) {
       parsed[key] = parsed[key].map(normalize);
     }
   }
-
   parsed = autoFill(parsed);
   return validateOutput(parsed);
 }
 
 
-
-// export async function processMessage(inputText) {
-//   // ⭐ Sanitize incoming text to avoid curly quotes, weird whitespace, etc.
-//   inputText = inputText
-//     .trim()
-//     .replace(/[\u201C\u201D]/g, '"')   // curly double quotes → "
-//     .replace(/[\u2018\u2019]/g, "'")  // curly single quotes → '
-//     .replace(/\s+/g, ' ');            // collapse weird whitespace
-//   let response;
-
-//   try {
-//     response = await callGroqLLM(inputText);
-//     if (!response.ok) {
-//       throw new Error("Groq request failed");
-//     }
-//   } catch (err) {
-//     console.warn("Groq failed, using mock:", err);
-//     response = await mockLLMResponse(inputText);
-//   }
-
-//   const text = await response.text();
-
-//   console.log("RAW GROQ RESPONSE:", text);
-
-//   let parsed;
-//   try {
-//     let extractSource = text;
-
-//     // Try to parse the outer envelope safely
-//     try {
-//       const envelope = JSON.parse(text);
-//       const content = envelope?.choices?.[0]?.message?.content;
-
-//       // If the model returned content, use ONLY that
-//       if (typeof content === "string") {
-//         extractSource = content.trim();
-//       }
-//     } catch {
-//       // If outer JSON fails, fall back to raw text
-//       extractSource = text.trim();
-//     }
-
-//     // Now extract ONLY the inner JSON object
-//     const cleaned = extractJson(extractSource).trim();
-
-//     // Parse the inner JSON safely
-//     parsed = JSON.parse(cleaned);
-
-//   } catch {
-//     throw new Error("Invalid JSON");
-//   }
-
-//   const normalize = (str) =>
-//     typeof str === "string"
-//       ? str
-//         .replace(/[\u201C\u201D]/g, '"')   // curly double quotes → "
-//         .replace(/[\u2018\u2019]/g, "'")  // curly single quotes → '
-//       : str;
-
-//   for (const key of Object.keys(parsed)) {
-//     if (typeof parsed[key] === "string") {
-//       parsed[key] = normalize(parsed[key]);
-//     }
-//     if (Array.isArray(parsed[key])) {
-//       parsed[key] = parsed[key].map(normalize);
-//     }
-//   }
-
-//   parsed = autoFill(parsed);
-//   return validateOutput(parsed);
-// }
