@@ -1,3 +1,6 @@
+//inbound-email.js
+
+import getRawBody from "raw-body";
 
 export const config = {
   api: {
@@ -11,11 +14,9 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Vercel gives us the raw body as a Buffer when bodyParser is disabled
+    // --- RAW BODY (Mailgun x-www-form-urlencoded) ---
     const rawBody = await getRawBody(req);
     const text = rawBody.toString();
-
-    // Mailgun sends x-www-form-urlencoded
     const data = Object.fromEntries(new URLSearchParams(text));
 
     const cleanMessage = extractForwardedMessage(data['body-plain']);
@@ -28,7 +29,10 @@ export default async function handler(req, res) {
     });
     console.log("cleanMessage:", cleanMessage);
 
-    const agentResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/groq-proxy`, {
+    // --- CALL GROQ PROXY ---
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `https://${process.env.VERCEL_URL}`;
+
+    const proxyRes = await fetch(`${baseUrl}/api/groq-proxy`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -37,31 +41,54 @@ export default async function handler(req, res) {
       })
     });
 
-    const agentJson = await agentResponse.json();
+    const completion = await proxyRes.json();
+    console.log("Groq completion envelope:", completion);
 
-    console.log("Agent output:", agentJson);
+    // --- EXTRACT MODEL OUTPUT ---
+    const raw = completion?.choices?.[0]?.message?.content || "{}";
 
-    const fromLine = data['body-plain']?.split(/\r?\n/).find((line) => /^From:\s*/i.test(line.trim()));
+    let agent;
+    try {
+      agent = JSON.parse(raw);
+    } catch (e) {
+      console.error("Failed to parse Groq JSON:", raw);
+      agent = {};
+    }
+
+    console.log("Parsed agent JSON:", agent);
+
+    // --- SAFE FALLBACKS ---
+    const actionItems = agent.action_items || [];
+    const clientQuestions = agent.client_questions || [];
+    const followUps = agent.followups || agent.followup_items || [];
+    const draftReply = agent.draft_reply || agent.reply || "";
+
+    // --- EXTRACT CLIENT EMAIL FROM FORWARDED HEADER ---
+    const fromLine = data['body-plain']?.split(/\r?\n/).find((line) =>
+      /^From:\s*/i.test(line.trim())
+    );
+
     const clientEmail =
       fromLine?.match(/<([^>]+)>/)?.[1] ||
       fromLine?.match(/From:\s*(\S+@\S+)/i)?.[1] ||
       '';
 
+    // --- BUILD OUTBOUND EMAIL BODY ---
     const emailBody = `
 Action Items:
-${agentJson.action_items?.map(i => "- " + i).join("\n")}
+${actionItems.map(i => "- " + i).join("\n")}
 
 Client Questions:
-${agentJson.client_questions?.map(q => "- " + q).join("\n")}
+${clientQuestions.map(q => "- " + q).join("\n")}
 
 Follow-Ups:
-${agentJson.followups?.map(f => "- " + f).join("\n")}
+${followUps.map(f => "- " + f).join("\n")}
 
 Draft Reply:
-${agentJson.draft_reply}
+${draftReply}
 
 Send to Client:
-mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}&body=${encodeURIComponent(agentJson.draft_reply)}
+mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}&body=${encodeURIComponent(draftReply)}
 `;
 
     console.log("Outbound Mailgun: sending", {
@@ -70,6 +97,7 @@ mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}&body=
       to: data.sender,
     });
 
+    // --- SEND OUTBOUND EMAIL VIA MAILGUN ---
     const mailgunResponse = await fetch(
       `https://api.mailgun.net/v3/${process.env.MAILGUN_DOMAIN}/messages`,
       {
@@ -104,6 +132,8 @@ mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}&body=
     return res.status(500).json({ error: "Internal server error" });
   }
 }
+
+// --- HELPERS ---------------------------------------------------
 
 function extractForwardedMessage(body) {
   if (!body || typeof body !== 'string') {
