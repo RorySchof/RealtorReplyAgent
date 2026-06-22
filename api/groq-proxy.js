@@ -49,37 +49,65 @@ export default async function handler(req) {
     const content = choice?.message?.content ?? "";
 
     // --- EXTRACT JSON OBJECT FROM MODEL OUTPUT ---
+    // let parsed;
+    // try {
+    //   const jsonMatch = rawText.match(/\{[\s\S]*?\}/);
+
+
+    //   if (!jsonMatch) {
+    //     console.error("NO JSON OBJECT FOUND IN MODEL OUTPUT");
+    //     console.error("MODEL CONTENT START:", rawText.slice(0, 200));
+    //     console.error("MODEL CONTENT END:", rawText.slice(-200));
+    //     parsed = {};
+
+    //   } else {
+    //     const jsonString = jsonMatch[0];
+
+    //     try {
+    //       parsed = JSON.parse(jsonString);
+    //     } catch (err) {
+    //       console.error("JSON PARSE ERROR:", err.message);
+    //       console.error("RAW JSON STRING START:", jsonString.slice(0, 200));
+    //       console.error("RAW JSON STRING END:", jsonString.slice(-200));
+    //       parsed = {};
+    //     }
+    //   }
+    // } catch (err) {
+    //   console.error("UNEXPECTED JSON EXTRACTION ERROR:", err);
+    //   parsed = {};
+    // }
+
+    // console.error("GROQ RAW finish_reason:", choice?.finish_reason);
+    // console.error("GROQ RAW content length:", content.length);
+    // console.error("GROQ RAW content end:", content.slice(-20));
+
+
     let parsed;
+try {
+  // Extract ONLY from the model's content, not the raw Groq envelope
+  const jsonMatch = content.match(/\{[\s\S]*?\}/);
+
+  if (!jsonMatch) {
+    console.error("NO JSON OBJECT FOUND IN MODEL OUTPUT");
+    console.error("MODEL CONTENT START:", content.slice(0, 200));
+    console.error("MODEL CONTENT END:", content.slice(-200));
+    parsed = {};
+  } else {
+    const jsonString = jsonMatch[0];
+
     try {
-      const jsonMatch = rawText.match(/\{[\s\S]*?\}/);
-
-
-      if (!jsonMatch) {
-        console.error("NO JSON OBJECT FOUND IN MODEL OUTPUT");
-        console.error("MODEL CONTENT START:", rawText.slice(0, 200));
-        console.error("MODEL CONTENT END:", rawText.slice(-200));
-        parsed = {};
-
-      } else {
-        const jsonString = jsonMatch[0];
-
-        try {
-          parsed = JSON.parse(jsonString);
-        } catch (err) {
-          console.error("JSON PARSE ERROR:", err.message);
-          console.error("RAW JSON STRING START:", jsonString.slice(0, 200));
-          console.error("RAW JSON STRING END:", jsonString.slice(-200));
-          parsed = {};
-        }
-      }
+      parsed = JSON.parse(jsonString);
     } catch (err) {
-      console.error("UNEXPECTED JSON EXTRACTION ERROR:", err);
+      console.error("JSON PARSE ERROR:", err.message);
+      console.error("RAW JSON STRING START:", jsonString.slice(0, 200));
+      console.error("RAW JSON STRING END:", jsonString.slice(-200));
       parsed = {};
     }
-
-    console.error("GROQ RAW finish_reason:", choice?.finish_reason);
-    console.error("GROQ RAW content length:", content.length);
-    console.error("GROQ RAW content end:", content.slice(-20));
+  }
+} catch (err) {
+  console.error("UNEXPECTED JSON EXTRACTION ERROR:", err);
+  parsed = {};
+}
 
     // --- NOW LET SDK PARSE NORMALLY ---
     const completion = await promise;
