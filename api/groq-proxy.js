@@ -48,6 +48,33 @@ export default async function handler(req) {
     const choice = rawJson?.choices?.[0];
     const content = choice?.message?.content ?? "";
 
+    // --- EXTRACT JSON OBJECT FROM MODEL OUTPUT ---
+    let parsed;
+    try {
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+
+      if (!jsonMatch) {
+        console.error("NO JSON OBJECT FOUND IN MODEL OUTPUT");
+        console.error("MODEL CONTENT START:", content.slice(0, 200));
+        console.error("MODEL CONTENT END:", content.slice(-200));
+        parsed = {};
+      } else {
+        const jsonString = jsonMatch[0];
+
+        try {
+          parsed = JSON.parse(jsonString);
+        } catch (err) {
+          console.error("JSON PARSE ERROR:", err.message);
+          console.error("RAW JSON STRING START:", jsonString.slice(0, 200));
+          console.error("RAW JSON STRING END:", jsonString.slice(-200));
+          parsed = {};
+        }
+      }
+    } catch (err) {
+      console.error("UNEXPECTED JSON EXTRACTION ERROR:", err);
+      parsed = {};
+    }
+
     console.error("GROQ RAW finish_reason:", choice?.finish_reason);
     console.error("GROQ RAW content length:", content.length);
     console.error("GROQ RAW content end:", content.slice(-20));
@@ -55,10 +82,17 @@ export default async function handler(req) {
     // --- NOW LET SDK PARSE NORMALLY ---
     const completion = await promise;
 
-    return new Response(JSON.stringify(completion), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    // --- RETURN PARSED JSON + RAW COMPLETION ---
+    return new Response(
+      JSON.stringify({
+        parsed,
+        completion,
+      }),
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
 
   } catch (err) {
     console.error("Groq proxy error:", err);
@@ -68,4 +102,3 @@ export default async function handler(req) {
     });
   }
 }
-

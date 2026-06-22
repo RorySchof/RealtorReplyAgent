@@ -146,13 +146,15 @@ function validateOutput(parsed) {
 }
 
 // --- MAIN ENTRY POINT (updated with extractor + autofill) ---
+
+
 export async function processMessage(inputText) {
-  // ⭐ Sanitize incoming text to avoid curly quotes, weird whitespace, etc.
   inputText = inputText
     .trim()
-    .replace(/[\u201C\u201D]/g, '"')   // curly double quotes → "
-    .replace(/[\u2018\u2019]/g, "'")  // curly single quotes → '
-    .replace(/\s+/g, ' ');            // collapse weird whitespace
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/\s+/g, " ");
+
   let response;
 
   try {
@@ -165,43 +167,16 @@ export async function processMessage(inputText) {
     response = await mockLLMResponse(inputText);
   }
 
-  const text = await response.text();
+  // ⭐ NEW: read parsed JSON directly from proxy
+  const data = await response.json();
+  let parsed = data.parsed || {};
 
-  console.log("RAW GROQ RESPONSE:", text);
-
-  let parsed;
-  try {
-    let extractSource = text;
-
-    // Try to parse the outer envelope safely
-    try {
-      const envelope = JSON.parse(text);
-      const content = envelope?.choices?.[0]?.message?.content;
-
-      // If the model returned content, use ONLY that
-      if (typeof content === "string") {
-        extractSource = content.trim();
-      }
-    } catch {
-      // If outer JSON fails, fall back to raw text
-      extractSource = text.trim();
-    }
-
-    // Now extract ONLY the inner JSON object
-    const cleaned = extractJson(extractSource).trim();
-
-    // Parse the inner JSON safely
-    parsed = JSON.parse(cleaned);
-
-  } catch {
-    throw new Error("Invalid JSON");
-  }
-
+  // Normalize curly quotes etc.
   const normalize = (str) =>
     typeof str === "string"
       ? str
-        .replace(/[\u201C\u201D]/g, '"')   // curly double quotes → "
-        .replace(/[\u2018\u2019]/g, "'")  // curly single quotes → '
+          .replace(/[\u201C\u201D]/g, '"')
+          .replace(/[\u2018\u2019]/g, "'")
       : str;
 
   for (const key of Object.keys(parsed)) {
@@ -216,3 +191,76 @@ export async function processMessage(inputText) {
   parsed = autoFill(parsed);
   return validateOutput(parsed);
 }
+
+
+
+// export async function processMessage(inputText) {
+//   // ⭐ Sanitize incoming text to avoid curly quotes, weird whitespace, etc.
+//   inputText = inputText
+//     .trim()
+//     .replace(/[\u201C\u201D]/g, '"')   // curly double quotes → "
+//     .replace(/[\u2018\u2019]/g, "'")  // curly single quotes → '
+//     .replace(/\s+/g, ' ');            // collapse weird whitespace
+//   let response;
+
+//   try {
+//     response = await callGroqLLM(inputText);
+//     if (!response.ok) {
+//       throw new Error("Groq request failed");
+//     }
+//   } catch (err) {
+//     console.warn("Groq failed, using mock:", err);
+//     response = await mockLLMResponse(inputText);
+//   }
+
+//   const text = await response.text();
+
+//   console.log("RAW GROQ RESPONSE:", text);
+
+//   let parsed;
+//   try {
+//     let extractSource = text;
+
+//     // Try to parse the outer envelope safely
+//     try {
+//       const envelope = JSON.parse(text);
+//       const content = envelope?.choices?.[0]?.message?.content;
+
+//       // If the model returned content, use ONLY that
+//       if (typeof content === "string") {
+//         extractSource = content.trim();
+//       }
+//     } catch {
+//       // If outer JSON fails, fall back to raw text
+//       extractSource = text.trim();
+//     }
+
+//     // Now extract ONLY the inner JSON object
+//     const cleaned = extractJson(extractSource).trim();
+
+//     // Parse the inner JSON safely
+//     parsed = JSON.parse(cleaned);
+
+//   } catch {
+//     throw new Error("Invalid JSON");
+//   }
+
+//   const normalize = (str) =>
+//     typeof str === "string"
+//       ? str
+//         .replace(/[\u201C\u201D]/g, '"')   // curly double quotes → "
+//         .replace(/[\u2018\u2019]/g, "'")  // curly single quotes → '
+//       : str;
+
+//   for (const key of Object.keys(parsed)) {
+//     if (typeof parsed[key] === "string") {
+//       parsed[key] = normalize(parsed[key]);
+//     }
+//     if (Array.isArray(parsed[key])) {
+//       parsed[key] = parsed[key].map(normalize);
+//     }
+//   }
+
+//   parsed = autoFill(parsed);
+//   return validateOutput(parsed);
+// }
