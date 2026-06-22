@@ -35,8 +35,10 @@ export default async function handler(req, res) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        message: cleanMessage,
-        mode: "email_inbound"
+        messages: [
+          { role: "system", content: process.env.SYSTEM_PROMPT },
+          { role: "user", content: cleanMessage }
+        ]
       })
     });
 
