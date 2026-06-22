@@ -51,7 +51,8 @@ export default async function handler(req) {
     // --- EXTRACT JSON OBJECT FROM MODEL OUTPUT ---
     let parsed;
     try {
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      const jsonMatch = content.match(/\{[\s\S]*?\}/);
+
 
       if (!jsonMatch) {
         console.error("NO JSON OBJECT FOUND IN MODEL OUTPUT");
