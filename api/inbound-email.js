@@ -101,7 +101,7 @@ Draft Reply:
 ${draftReply}
 
 Send to Client:
-mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}&body=${encodeURIComponent(draftReply)}
+mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}
 `;
 
     console.log("Outbound Mailgun: sending", {
@@ -112,42 +112,41 @@ mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}&body=
 
     // Button
 
-    const mailtoLink = `mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}&body=${encodeURIComponent(draftReply)}`;
+    const mailtoLink = `mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}`;
+    const mailtoHref = escapeHtmlAttr(mailtoLink);
 
-    const emailHtml = String.raw`
-    <h3>Action Items:</h3>
-    <ul>
-      ${actionItems.map(i => `<li>${i}</li>`).join("")}
-    </ul>
-  
-    <h3>Client Questions:</h3>
-    <ul>
-      ${clientQuestions.map(q => `<li>${q}</li>`).join("")}
-    </ul>
-  
-    <h3>Follow-Ups:</h3>
-    <ul>
-      ${followUps.map(f => `<li>${f}</li>`).join("")}
-    </ul>
-  
-    <h3>Draft Reply:</h3>
-    <pre>${draftReply}</pre>
-  
-    <h3>Send to Client:</h3>
-    <p>
-      <a href="${mailtoLink}" style="
-        display:inline-block;
-        padding:12px 18px;
-        background:#2563eb;
-        color:white;
-        text-decoration:none;
-        border-radius:6px;
-        font-weight:600;
-      ">Send to Client</a>
-    </p>
-  
-    <p>Or copy/paste this link:<br>${mailtoLink}</p>
-  `;
+    const emailHtml = `<h3>Action Items:</h3>
+<ul>
+${actionItems.map(i => `<li>${escapeHtml(i)}</li>`).join("")}
+</ul>
+
+<h3>Client Questions:</h3>
+<ul>
+${clientQuestions.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
+</ul>
+
+<h3>Follow-Ups:</h3>
+<ul>
+${followUps.map(f => `<li>${escapeHtml(f)}</li>`).join("")}
+</ul>
+
+<h3>Draft Reply:</h3>
+<pre>${escapeHtml(draftReply)}</pre>
+
+<h3>Send to Client:</h3>
+<p>
+<a href="${mailtoHref}" style="
+display:inline-block;
+padding:12px 18px;
+background:#2563eb;
+color:white;
+text-decoration:none;
+border-radius:6px;
+font-weight:600;
+">Send to Client</a>
+</p>
+
+<p>Or copy/paste this link:<br>${escapeHtml(mailtoLink)}</p>`;
   
 
     // --- SEND OUTBOUND EMAIL VIA MAILGUN ---
@@ -189,6 +188,18 @@ mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}&body=
 }
 
 // --- HELPERS ---------------------------------------------------
+
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function escapeHtmlAttr(text) {
+  return escapeHtml(text);
+}
 
 // Diagnostic-only: fingerprint strings for log correlation (no functional use).
 function diagHash(str) {
