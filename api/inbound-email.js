@@ -40,6 +40,8 @@ export default async function handler(req, res) {
     console.log("[DIAG] inbound-email — SYSTEM_PROMPT hash:", diagHash(process.env.SYSTEM_PROMPT));
     console.log("[DIAG] inbound-email — cleanMessage length:", cleanMessage.length);
 
+    console.log("[DIAG] inbound-email — SYSTEM_PROMPT FULL TEXT:", process.env.SYSTEM_PROMPT);
+
     const proxyRes = await fetch(`${baseUrl}/api/groq-proxy`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
