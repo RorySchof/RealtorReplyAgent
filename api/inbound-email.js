@@ -1,4 +1,4 @@
-//inbound-email.js (working)
+//inbound-email.js (working!)
 
 export const config = {
   api: {
