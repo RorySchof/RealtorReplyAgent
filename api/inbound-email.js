@@ -1,5 +1,7 @@
 //inbound-email.js (working!!)
 
+console.log("[DIAG] LOADED inbound-email.js FROM:", __filename);
+
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
