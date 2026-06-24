@@ -112,7 +112,13 @@ mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}
 
     // Button
 
-    const mailtoLink = `mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}`;
+  
+
+    const mailtoLink =
+  `mailto:${clientEmail}` +
+  `?subject=${encodeURIComponent("Re: " + data.subject)}` +
+  `&body=${encodeURIComponent(draftReply)}`;
+    
     const mailtoHref = escapeHtmlAttr(mailtoLink);
 
     const emailHtml = `<h3>Action Items:</h3>
