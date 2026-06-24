@@ -1,6 +1,8 @@
 
 // src/agent.js
 
+import wrapperPrompt from "@/prompts/wrapper-prompt.txt";
+
 const SYSTEM_PROMPT = `
 You are a professional real estate assistant. Your job is to interpret messy, informal, or unclear client messages and convert them into structured next steps for a realtor.
 
@@ -118,6 +120,7 @@ function autoFill(parsed) {
 // --- REAL LLM CALL (GROQ) ---
 async function callGroqLLM(inputText) {
   const messages = [
+    { role: "system", content: wrapperPrompt },
     { role: "system", content: SYSTEM_PROMPT },
     { role: "user", content: inputText }
   ];
