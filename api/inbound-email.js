@@ -117,6 +117,8 @@ mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}
 
     // Button
 
+    const draftReplyEscapedForJs = escapeHtml(draftReply).replace(/'/g, "\\'");
+
     const mailtoLink =
       `mailto:${clientEmail}` +
       `?subject=${encodeURIComponent("Re: " + data.subject)}` +
@@ -158,6 +160,17 @@ text-decoration:none;
 border-radius:6px;
 font-weight:600;
 ">Send to Client</a>
+
+<a href="#" onclick="navigator.clipboard.writeText('${draftReplyEscapedForJs}')" style="
+display:inline-block;
+padding:12px 18px;
+background:#6b7280;
+color:white;
+text-decoration:none;
+border-radius:6px;
+font-weight:600;
+margin-left:8px;
+">Copy Reply</a>
 </p>
 
 <p>Or copy/paste this link:<br>${escapeHtml(mailtoLink)}</p>`;
