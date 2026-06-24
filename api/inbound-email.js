@@ -75,6 +75,9 @@ export default async function handler(req, res) {
     const clientQuestions = agent.client_questions || [];
     const followUps = agent.followups || agent.followup_items || [];
     const draftReply = agent.draft_reply || agent.reply || "";
+    const questionsForClient = agent.client_questions || agent.questions_for_client || [];
+    const questionsFromClient = extractQuestionsFromClient(cleanMessage);
+
 
     // --- EXTRACT CLIENT EMAIL FROM FORWARDED HEADER ---
     const fromLine = data['body-plain']?.split(/\r?\n/).find((line) =>
@@ -91,9 +94,11 @@ export default async function handler(req, res) {
 Action Items:
 ${actionItems.map(i => "- " + i).join("\n")}
 
-Client Questions:
-${clientQuestions.map(q => "- " + q).join("\n")}
+Questions FROM Client:
+${questionsFromClient.map(q => "- " + q).join("\n")}
 
+Questions FOR Client:
+${questionsForClient.map(q => "- " + q).join("\n")}
 Follow-Ups:
 ${followUps.map(f => "- " + f).join("\n")}
 
@@ -112,13 +117,11 @@ mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}
 
     // Button
 
-  
-
     const mailtoLink =
-  `mailto:${clientEmail}` +
-  `?subject=${encodeURIComponent("Re: " + data.subject)}` +
-  `&body=${encodeURIComponent(draftReply)}`;
-    
+      `mailto:${clientEmail}` +
+      `?subject=${encodeURIComponent("Re: " + data.subject)}` +
+      `&body=${encodeURIComponent(draftReply)}`;
+
     const mailtoHref = escapeHtmlAttr(mailtoLink);
 
     const emailHtml = `<h3>Action Items:</h3>
@@ -126,9 +129,14 @@ mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}
 ${actionItems.map(i => `<li>${escapeHtml(i)}</li>`).join("")}
 </ul>
 
-<h3>Client Questions:</h3>
+<h3>Questions FROM Client:</h3>
 <ul>
-${clientQuestions.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
+${questionsFromClient.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
+</ul>
+
+<h3>Questions FOR Client:</h3>
+<ul>
+${questionsForClient.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
 </ul>
 
 <h3>Follow-Ups:</h3>
@@ -153,7 +161,7 @@ font-weight:600;
 </p>
 
 <p>Or copy/paste this link:<br>${escapeHtml(mailtoLink)}</p>`;
-  
+
 
     // --- SEND OUTBOUND EMAIL VIA MAILGUN ---
     const mailgunResponse = await fetch(
@@ -171,7 +179,7 @@ font-weight:600;
           text: emailBody,
           html: emailHtml
         }).toString(),
-        
+
       }
     );
 
@@ -271,4 +279,12 @@ function getRawBody(req) {
     req.on("end", () => resolve(Buffer.concat(chunks)));
     req.on("error", reject);
   });
+}
+
+function extractQuestionsFromClient(text) {
+  if (!text) return [];
+  return text
+    .split(/\r?\n/)
+    .filter(line => line.trim().endsWith("?"))
+    .map(line => line.trim());
 }
