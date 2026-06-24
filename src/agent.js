@@ -1,6 +1,8 @@
 
 // src/agent.js
 
+console.log("[DIAG] LOADED agent.js FROM:", import.meta.url);
+
 import wrapperPrompt from "@/prompts/wrapper-prompt.txt";
 
 
@@ -98,6 +100,10 @@ function autoFill(parsed) {
 
 
 async function callGroqLLM(inputText) {
+  console.log("[DIAG] USING WRAPPER-ONLY CALLGROQLLM");
+
+
+
   const messages = [
     { role: "system", content: wrapperPrompt },
     { role: "user", content: inputText }
@@ -156,6 +162,7 @@ function validateOutput(parsed) {
 
 
 export async function processMessage(inputText) {
+  console.log("[DIAG] processMessage CALLED");
   console.log("[DIAG] agent.js — processMessage input length (before sanitize):", inputText?.length ?? 0);
 
   inputText = inputText
