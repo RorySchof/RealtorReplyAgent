@@ -3,7 +3,9 @@
 
 console.log("[DIAG] LOADED agent.js FROM:", import.meta.url);
 
-import wrapperPrompt from "@/prompts/wrapper-prompt.txt";
+import wrapperPrompt from "./prompts/wrapper-prompt.txt";
+
+console.log("[DIAG] wrapperPrompt length:", wrapperPrompt?.length);
 
 
 // Groq endpoint + model
