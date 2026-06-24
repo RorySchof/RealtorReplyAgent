@@ -1,5 +1,13 @@
 //inbound-email.js (working!!)
 
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const wrapperPrompt = readFileSync(join(__dirname, "../prompts/wrapper-prompt.txt"), "utf8");
+const SYSTEM_PROMPT = readFileSync(join(__dirname, "../prompts/system-prompt.txt"), "utf8");
+
 export const config = {
   api: {
     bodyParser: false, // Required for Mailgun
@@ -27,46 +35,82 @@ export default async function handler(req, res) {
     });
     console.log("cleanMessage:", cleanMessage);
 
-    // --- CALL GROQ PROXY ---
+    // --- TWO-PASS GROQ PIPELINE ---
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `https://${process.env.VERCEL_URL}`;
 
-    const groqMessages = [
-      { role: "system", content: process.env.SYSTEM_PROMPT },
+    // PASS 1 — Preprocessing (wrapper)
+    const pass1Messages = [
+      { role: "system", content: wrapperPrompt },
       { role: "user", content: cleanMessage }
     ];
-    logMessagesDiagnostics("inbound-email outbound to groq-proxy", groqMessages);
-    console.log("[DIAG] inbound-email — SYSTEM_PROMPT source: process.env.SYSTEM_PROMPT");
-    console.log("[DIAG] inbound-email — SYSTEM_PROMPT length:", process.env.SYSTEM_PROMPT?.length ?? 0);
-    console.log("[DIAG] inbound-email — SYSTEM_PROMPT hash:", diagHash(process.env.SYSTEM_PROMPT));
+    logMessagesDiagnostics("PASS 1 — inbound-email outbound to groq-proxy", pass1Messages);
+    console.log("[DIAG] inbound-email — wrapperPrompt source: prompts/wrapper-prompt.txt");
+    console.log("[DIAG] inbound-email — wrapperPrompt length:", wrapperPrompt?.length ?? 0);
+    console.log("[DIAG] inbound-email — wrapperPrompt hash:", diagHash(wrapperPrompt));
     console.log("[DIAG] inbound-email — cleanMessage length:", cleanMessage.length);
 
-    console.log("[DIAG] inbound-email — SYSTEM_PROMPT FULL TEXT:", process.env.SYSTEM_PROMPT);
-
-    const proxyRes = await fetch(`${baseUrl}/api/groq-proxy`, {
+    const pass1Res = await fetch(`${baseUrl}/api/groq-proxy`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: groqMessages })
+      body: JSON.stringify({ messages: pass1Messages })
     });
 
-    console.log("[DIAG] inbound-email — groq-proxy HTTP status:", proxyRes.status);
+    console.log("[DIAG] inbound-email — PASS 1 groq-proxy HTTP status:", pass1Res.status);
 
-    const completion = await proxyRes.json();
-    console.log("Groq completion envelope:", completion);
-    console.log("[DIAG] inbound-email — proxy response top-level keys:", Object.keys(completion ?? {}));
-    console.log("[DIAG] inbound-email — proxy response has parsed:", "parsed" in (completion ?? {}));
-    console.log("[DIAG] inbound-email — proxy response has completion:", "completion" in (completion ?? {}));
-    console.log("[DIAG] inbound-email — proxy parsed keys:", Object.keys(completion?.parsed ?? {}));
+    const pass1Completion = await pass1Res.json();
+    console.log("Groq completion envelope (PASS 1):", pass1Completion);
+    console.log("[DIAG] inbound-email — PASS 1 proxy response top-level keys:", Object.keys(pass1Completion ?? {}));
+    console.log("[DIAG] inbound-email — PASS 1 proxy response has parsed:", "parsed" in (pass1Completion ?? {}));
+    console.log("[DIAG] inbound-email — PASS 1 proxy response has completion:", "completion" in (pass1Completion ?? {}));
+    console.log("[DIAG] inbound-email — PASS 1 proxy parsed keys:", Object.keys(pass1Completion?.parsed ?? {}));
     console.log(
-      "[DIAG] inbound-email — proxy completion.choices[0].message.content length:",
-      completion?.completion?.choices?.[0]?.message?.content?.length ?? null
+      "[DIAG] inbound-email — PASS 1 proxy completion.choices[0].message.content length:",
+      pass1Completion?.completion?.choices?.[0]?.message?.content?.length ?? null
     );
     console.log(
-      "[DIAG] inbound-email — proxy completion.choices[0].message.content:",
-      completion?.completion?.choices?.[0]?.message?.content ?? null
+      "[DIAG] inbound-email — PASS 1 proxy completion.choices[0].message.content:",
+      pass1Completion?.completion?.choices?.[0]?.message?.content ?? null
+    );
+
+    const preprocessed = pass1Completion.parsed?.preprocessed ?? pass1Completion.parsed ?? {};
+    console.log("[DIAG] inbound-email — PASS 1 preprocessed:", preprocessed);
+
+    // PASS 2 — Main assistant (SYSTEM_PROMPT)
+    const pass2Messages = [
+      { role: "system", content: SYSTEM_PROMPT },
+      { role: "user", content: JSON.stringify(preprocessed) }
+    ];
+    logMessagesDiagnostics("PASS 2 — inbound-email outbound to groq-proxy", pass2Messages);
+    console.log("[DIAG] inbound-email — SYSTEM_PROMPT source: prompts/system-prompt.txt");
+    console.log("[DIAG] inbound-email — SYSTEM_PROMPT length:", SYSTEM_PROMPT?.length ?? 0);
+    console.log("[DIAG] inbound-email — SYSTEM_PROMPT hash:", diagHash(SYSTEM_PROMPT));
+    console.log("[DIAG] inbound-email — SYSTEM_PROMPT FULL TEXT:", SYSTEM_PROMPT);
+
+    const pass2Res = await fetch(`${baseUrl}/api/groq-proxy`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: pass2Messages })
+    });
+
+    console.log("[DIAG] inbound-email — PASS 2 groq-proxy HTTP status:", pass2Res.status);
+
+    const pass2Completion = await pass2Res.json();
+    console.log("Groq completion envelope (PASS 2):", pass2Completion);
+    console.log("[DIAG] inbound-email — PASS 2 proxy response top-level keys:", Object.keys(pass2Completion ?? {}));
+    console.log("[DIAG] inbound-email — PASS 2 proxy response has parsed:", "parsed" in (pass2Completion ?? {}));
+    console.log("[DIAG] inbound-email — PASS 2 proxy response has completion:", "completion" in (pass2Completion ?? {}));
+    console.log("[DIAG] inbound-email — PASS 2 proxy parsed keys:", Object.keys(pass2Completion?.parsed ?? {}));
+    console.log(
+      "[DIAG] inbound-email — PASS 2 proxy completion.choices[0].message.content length:",
+      pass2Completion?.completion?.choices?.[0]?.message?.content?.length ?? null
+    );
+    console.log(
+      "[DIAG] inbound-email — PASS 2 proxy completion.choices[0].message.content:",
+      pass2Completion?.completion?.choices?.[0]?.message?.content ?? null
     );
 
     // --- EXTRACT MODEL OUTPUT ---
-    const agent = completion.parsed;
+    const agent = pass2Completion.parsed;
 
     console.log("Parsed agent JSON:", agent);
 
