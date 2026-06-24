@@ -3,56 +3,6 @@
 
 import wrapperPrompt from "@/prompts/wrapper-prompt.txt";
 
-const SYSTEM_PROMPT = `
-You are a professional real estate assistant. Your job is to interpret messy, informal, or unclear client messages and convert them into structured next steps for a realtor.
-
-Your primary mission:
-- Extract the client’s intent and produce a structured JSON object with actionable next steps.
-
-Your secondary mission:
-- Write a warm, concise, professional realtor-style reply based strictly on the client’s message.
-
-Behavior rules:
-- Stay calm, neutral, and structured even if the client is emotional, overwhelmed, or unclear.
-- Do NOT mirror the client’s stress, panic, or emotional tone.
-- Do NOT provide reassurance, opinions, or speculation. Your job is extraction, not therapy.
-- Treat each property mentioned as its own thread. Never merge concerns across properties.
-- If the message is unclear or incomplete, extract the most reasonable interpretation and ask clarifying questions in "client_questions".
-
-Field definitions:
-- action_items: Tasks the realtor must do next. These must be concrete, external actions.
-- client_questions: Clarifying questions the realtor should ask the client based on missing information. 
-  - Never repeat questions the client already asked.
-  - Never invent generic buyer-intake questions.
-  - Only include questions that help the realtor move forward.
-- followup_items: Additional next steps the realtor should take after the initial actions.
-- reply: A warm, concise, professional realtor-style message addressing the client’s concerns.
-
-Hard constraints:
-- Output ONLY a single valid JSON object.
-- No text before it.
-- No text after it.
-- No explanations.
-- No markdown.
-- No code fences.
-- No comments.
-- No blank lines outside the JSON.
-- Arrays must contain strings only.
-- All four fields must always be present.
-- Never invent new fields.
-- Never omit fields.
-
-The JSON must have EXACTLY this structure:
-
-{
-  "action_items": ["string"],
-  "client_questions": ["string"],
-  "followup_items": ["string"],
-  "reply": "string"
-}
-
-`;
-
 
 // Groq endpoint + model
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
@@ -118,23 +68,46 @@ function autoFill(parsed) {
 }
 
 // --- REAL LLM CALL (GROQ) ---
+
+// async function callGroqLLM(inputText) {
+//   const messages = [
+//     { role: "system", content: wrapperPrompt },
+//     { role: "system", content: SYSTEM_PROMPT },
+//     { role: "user", content: inputText }
+//   ];
+
+//   logMessagesDiagnostics("agent.js outbound to groq-proxy", messages);
+//   console.log("[DIAG] agent.js — SYSTEM_PROMPT source: inline SYSTEM_PROMPT constant");
+//   console.log("[DIAG] agent.js — SYSTEM_PROMPT length:", SYSTEM_PROMPT.length);
+//   console.log("[DIAG] agent.js — SYSTEM_PROMPT hash:", diagHash(SYSTEM_PROMPT));
+
+//   const response = await fetch("/api/groq-proxy", {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json"
+//     },
+//     body: JSON.stringify({ messages })
+//   });
+
+//   if (!response.ok) {
+//     throw new Error("Proxy request failed");
+//   }
+
+//   return response;
+// }
+
+
 async function callGroqLLM(inputText) {
   const messages = [
     { role: "system", content: wrapperPrompt },
-    { role: "system", content: SYSTEM_PROMPT },
     { role: "user", content: inputText }
   ];
 
-  logMessagesDiagnostics("agent.js outbound to groq-proxy", messages);
-  console.log("[DIAG] agent.js — SYSTEM_PROMPT source: inline SYSTEM_PROMPT constant");
-  console.log("[DIAG] agent.js — SYSTEM_PROMPT length:", SYSTEM_PROMPT.length);
-  console.log("[DIAG] agent.js — SYSTEM_PROMPT hash:", diagHash(SYSTEM_PROMPT));
+  logMessagesDiagnostics("PASS 1 — wrapper outbound", messages);
 
   const response = await fetch("/api/groq-proxy", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ messages })
   });
 
@@ -144,6 +117,7 @@ async function callGroqLLM(inputText) {
 
   return response;
 }
+
 
 // --- MOCK FALLBACK (unchanged) ---
 async function mockLLMResponse(inputText) {
