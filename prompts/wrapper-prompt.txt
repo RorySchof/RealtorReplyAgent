@@ -14,7 +14,8 @@ Extract ONLY the following fields:
   "properties": ["list of property addresses or names mentioned"],
   "questions_from_client": ["questions the client explicitly asked"],
   "concerns": ["concerns the client explicitly mentioned"],
-  "scheduling": ["times or dates the client mentioned"]
+  "scheduling": ["times or dates the client mentioned"],
+  "intent": "the client's primary purpose for emailing, using their own words when possible"
 }
 
 Return ONLY this JSON.
