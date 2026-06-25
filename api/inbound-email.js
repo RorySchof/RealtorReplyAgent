@@ -278,8 +278,14 @@ function getRawBody(req) {
 
 function extractQuestionsFromClient(text) {
   if (!text) return [];
-  return text
-    .split(/\r?\n/)
-    .filter(line => line.trim().endsWith("?"))
-    .map(line => line.trim());
+
+  // Normalize whitespace
+  const normalized = text.replace(/\r\n/g, "\n").replace(/\s+/g, " ");
+
+  // Split on sentence boundaries
+  const segments = normalized.split(/(?<=[.?!])\s+/);
+
+  return segments
+    .map(s => s.trim())
+    .filter(s => s.endsWith("?"));
 }
