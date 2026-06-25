@@ -17,7 +17,7 @@ Extract ONLY the following fields:
   ],
 
   "questions_from_client": [
-    "extract ONLY the direct question itself, not surrounding sentences",
+    "extract ONLY the minimal question clause, not the full sentence or paragraph",
     "include any sentence ending with a question mark",
     "include any sentence starting with: could you, can you, do you know, is there, should we, what do you think"
   ],
