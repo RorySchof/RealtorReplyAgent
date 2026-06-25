@@ -13,26 +13,31 @@ Extract ONLY the following fields:
   "raw_email": "the full cleaned email text",
 
   "properties": [
-    "any address, street name, unit number, or property identifier mentioned"
+    "extract any address, street name, unit number, or property identifier mentioned",
+    "include patterns like: <number> <CapitalizedWord> (e.g., '48 Juniper')"
   ],
 
   "questions_from_client": [
     "extract ONLY the minimal question clause, not the full sentence or paragraph",
-    "include any sentence ending with a question mark",
-    "include any sentence starting with: could you, can you, do you know, is there, should we, what do you think"
+    "if a question is embedded inside a longer sentence, extract only the question part",
+    "include any clause ending with a question mark",
+    "include any clause starting with: could you, can you, do you know, is there, should we, what do you think",
+    "do NOT include narrative context, setup sentences, or surrounding explanation"
   ],
 
   "concerns": [
-    "any sentence where the client expresses uncertainty, worry, hesitation, or something they want checked",
-    "include sentences containing: not sure, worried, concerned, seems high, seems low, smell, issue, problem"
+    "extract any sentence where the client expresses uncertainty, worry, hesitation, or something they want checked",
+    "include sentences containing: not sure, worried, concerned, seems high, seems low, smell, issue, problem",
+    "extract the concern phrase only, not unrelated surrounding text"
   ],
 
   "scheduling": [
-    "any phrase containing: today, tomorrow, after <time>, before <time>, <weekday>, <month>, <date>",
-    "any availability windows mentioned"
+    "extract any phrase containing: today, tomorrow, after <time>, before <time>, <weekday>, <month>, <date>",
+    "extract availability windows such as: 'after 6pm', 'Friday is no good', 'Saturday morning works'",
+    "do NOT include unrelated narrative text"
   ],
 
-  "intent": "the client's primary purpose for emailing, using their own words when possible"
+  "intent": "extract the client's primary purpose for emailing, using their own words when possible, without summarizing or interpreting"
 }
 
 Return ONLY this JSON.
