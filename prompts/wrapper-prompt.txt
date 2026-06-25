@@ -17,20 +17,21 @@ Extract ONLY the following fields:
     "include patterns like: <number> <CapitalizedWord> (e.g., '48 Juniper')"
   ],
 
- "questions_from_client": [
-  "extract ONLY the minimal question clause, not the full sentence or paragraph",
-  "if a question appears inside a longer sentence, extract only the question portion and ignore all other text",
-  "split sentences on punctuation marks (., !, ?) and evaluate each segment independently",
-  "include any segment ending with a question mark",
-  "include any segment starting with: could you, can you, do you know, is there, should we, what do you think",
-  "do NOT include narrative setup such as: 'I wanted to follow up…', 'I’ve been thinking…', 'One more thing…'",
-  "do NOT include descriptive or emotional context before or after the question",
-  "return ONLY the question itself, exactly as written by the client"
-]
+  "questions_from_client": [
+    "before extracting questions, split the email into segments using punctuation (. ! ?) and line breaks; evaluate each segment independently",
+    "extract ONLY the minimal question clause, not the full sentence or paragraph",
+    "if a question appears inside a longer sentence, extract only the question portion and ignore all other text",
+    "include any segment ending with a question mark",
+    "include any segment starting with: could you, can you, do you know, is there, should we, what do you think",
+    "do NOT include narrative setup such as: 'I wanted to follow up…', 'I’ve been thinking…', 'One more thing…'",
+    "do NOT include descriptive or emotional context before or after the question",
+    "return ONLY the question itself, exactly as written by the client"
+  ],
+
   "concerns": [
     "extract any sentence where the client expresses uncertainty, worry, hesitation, or something they want checked",
     "include sentences containing: not sure, worried, concerned, seems high, seems low, smell, issue, problem",
-    "extract the concern phrase only, not unrelated surrounding text"
+    "extract ONLY the concern phrase, not unrelated surrounding text"
   ],
 
   "scheduling": [
