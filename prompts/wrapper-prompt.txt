@@ -13,19 +13,23 @@ Extract ONLY the following fields:
   "raw_email": "the full cleaned email text",
 
   "properties": [
-    "any addresses, street names, unit numbers, or property identifiers mentioned"
+    "any address, street name, unit number, or property identifier mentioned"
   ],
 
   "questions_from_client": [
-    "any sentence that contains a direct question, a request for information, or a request for your opinion"
+    "extract ONLY the direct question itself, not surrounding sentences",
+    "include any sentence ending with a question mark",
+    "include any sentence starting with: could you, can you, do you know, is there, should we, what do you think"
   ],
 
   "concerns": [
-    "any sentence where the client expresses uncertainty, worry, hesitation, or something they want checked"
+    "any sentence where the client expresses uncertainty, worry, hesitation, or something they want checked",
+    "include sentences containing: not sure, worried, concerned, seems high, seems low, smell, issue, problem"
   ],
 
   "scheduling": [
-    "any dates, times, availability windows, or scheduling constraints mentioned"
+    "any phrase containing: today, tomorrow, after <time>, before <time>, <weekday>, <month>, <date>",
+    "any availability windows mentioned"
   ],
 
   "intent": "the client's primary purpose for emailing, using their own words when possible"
