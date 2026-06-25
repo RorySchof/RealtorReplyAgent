@@ -11,10 +11,23 @@ Extract ONLY the following fields:
 
 {
   "raw_email": "the full cleaned email text",
-  "properties": ["list of property addresses or names mentioned"],
-  "questions_from_client": ["questions the client explicitly asked"],
-  "concerns": ["concerns the client explicitly mentioned"],
-  "scheduling": ["times or dates the client mentioned"],
+
+  "properties": [
+    "any addresses, street names, unit numbers, or property identifiers mentioned"
+  ],
+
+  "questions_from_client": [
+    "any sentence that contains a direct question, a request for information, or a request for your opinion"
+  ],
+
+  "concerns": [
+    "any sentence where the client expresses uncertainty, worry, hesitation, or something they want checked"
+  ],
+
+  "scheduling": [
+    "any dates, times, availability windows, or scheduling constraints mentioned"
+  ],
+
   "intent": "the client's primary purpose for emailing, using their own words when possible"
 }
 
