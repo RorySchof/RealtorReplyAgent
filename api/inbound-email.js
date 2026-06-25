@@ -31,21 +31,24 @@ export default async function handler(req, res) {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `https://${process.env.VERCEL_URL}`;
 
     // PASS 1 — Preprocessing (wrapper)
-    const pass1Messages = [
-      { role: "system", content: wrapperPrompt },
-      { role: "user", content: cleanMessage }
-    ];
-    logMessagesDiagnostics("PASS 1 — inbound-email outbound to groq-proxy", pass1Messages);
+    // const pass1Messages = [
+    //   { role: "system", content: wrapperPrompt },
+    //   { role: "user", content: cleanMessage }
+    // ];
+    // logMessagesDiagnostics("PASS 1 — inbound-email outbound to groq-proxy", pass1Messages);
 
-    const pass1Res = await fetch(`${baseUrl}/api/groq-proxy`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: pass1Messages })
-    });
+    // const pass1Res = await fetch(`${baseUrl}/api/groq-proxy`, {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({ messages: pass1Messages })
+    // });
 
-    const pass1Completion = await pass1Res.json();
+    // const pass1Completion = await pass1Res.json();
 
-    const preprocessed = pass1Completion.parsed?.preprocessed ?? pass1Completion.parsed ?? {};
+    // const preprocessed = pass1Completion.parsed?.preprocessed ?? pass1Completion.parsed ?? {};
+
+    // PASS 1 DISABLED — send raw email directly to PASS 2
+    const preprocessed = { raw_email: cleanMessage };
 
     // PASS 2 — Main assistant (SYSTEM_PROMPT)
     const pass2Messages = [
