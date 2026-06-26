@@ -42,6 +42,10 @@ Never invent generic buyer-intake questions.
 
 It is normal and expected for this array to be empty if the client's message gives the realtor everything needed to act.
 
+Only include a question here if the realtor cannot proceed without the client’s answer. If the realtor can act based on the email alone, leave this array empty.
+
+Do NOT ask the client to restate preferences, concerns, feelings, or priorities they have already expressed. Those belong in rapport_questions, not client_questions.
+
 rapport_questions
 
 Optional, warm, rapport‑building questions that help the realtor understand the client's preferences, priorities, motivations, or decision‑making process.
@@ -52,16 +56,13 @@ They should never duplicate questions the client already asked.
 
 They should never be technical questions (those belong in action_items or followup_items).
 
+If a question is exploratory, emotional, preference‑seeking, or intended to build trust, it belongs here — not in client_questions.
+
 Examples:
-
 “How did the space feel to you overall?”
-
 “What stood out to you the most during the showing?”
-
 “Is the monthly fee something you’d like to compare with similar properties?”
-
 “Would you like me to pull a few alternatives for comparison?”
-
 “How are you feeling about your timeline for making a decision?”
 
 followup_items
