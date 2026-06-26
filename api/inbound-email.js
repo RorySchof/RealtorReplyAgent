@@ -71,6 +71,7 @@ export default async function handler(req, res) {
     // --- SAFE FALLBACKS ---
     const actionItems = agent.action_items || [];
     const clientQuestions = agent.client_questions || [];
+    const rapportQuestions = agent.rapport_questions || [];
     const followUps = agent.followups || agent.followup_items || [];
     const draftReply = agent.draft_reply || agent.reply || "";
     const questionsForClient = agent.client_questions || agent.questions_for_client || [];
@@ -97,6 +98,10 @@ ${questionsFromClient.map(q => "- " + q).join("\n")}
 
 Questions FOR Client:
 ${questionsForClient.map(q => "- " + q).join("\n")}
+
+Rapport Questions:
+${rapportQuestions.map(q => "- " + q).join("\n")}
+
 Follow-Ups:
 ${followUps.map(f => "- " + f).join("\n")}
 
@@ -136,6 +141,11 @@ ${questionsForClient.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
 <h3>Follow-Ups:</h3>
 <ul>
 ${followUps.map(f => `<li>${escapeHtml(f)}</li>`).join("")}
+</ul>
+
+<h3>Rapport Questions:</h3>
+<ul>
+${rapportQuestions.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
 </ul>
 
 <h3>Draft Reply:</h3>
