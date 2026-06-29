@@ -73,10 +73,6 @@ followup_items
 reply
 - Always output: "Hello world."
 
-Worked example
-
-Client message:
-"Hi Rory, thanks for showing me 14 Willowbank Crescent yesterday. The monthly fees seem a bit higher than other townhomes — do you know if they include window cleaning or gutter maintenance? Also the garage door opener was making a grinding noise when we tested it — is that a simple fix or a bigger issue? Could we schedule a second viewing Saturday late morning? I want to measure the living room wall."
 
 Correct output:
 {
