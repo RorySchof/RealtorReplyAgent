@@ -52,18 +52,36 @@ rapport_questions
 - The rapport question must NOT ask the client to evaluate options, list concerns, compare properties, or describe risk, reward, ROI, renovation potential, or any property-specific fact.
 - The rapport question should gently invite the client to share their overall experience or feelings, not their strategy or decision criteria.
 
-
 followup_items
-- Topics for a live conversation with the client, stated as a topic only — never an action the realtor performs, never a conclusion.
-- The verbs analyze, compare, evaluate, determine, decide, assess, or weigh must never appear. Use only: "Discuss [topic] with the client."
+- Include a followup item whenever the client asks for an opinion, comparison, recommendation, or any evaluation (e.g., “What do you think about the neighbourhood?”, “Which option would you choose?”, “Is this a good investment?”, “Should I prioritize X or Y?”).
+- Followup items must be phrased ONLY as: “Discuss [topic] with the client.”
+- The topic must be the exact subject the client asked about, without expanding, reframing, or adding analysis.
+- Never include actions the realtor performs (contacting, confirming, checking, obtaining, reviewing). Those belong in action_items.
+- Never include conclusions, summaries, or next steps. Only the discussion topic.
+- Followup items are required whenever the client asks for:
+  • an opinion
+  • a comparison
+  • a recommendation
+  • a neighbourhood evaluation
+  • a property evaluation
+  • a “what do you think” question
+  • a “which should I choose” question
+- If the client expresses uncertainty about a decision but does NOT explicitly ask for an opinion, include a followup item only if the uncertainty implies a topic that must be discussed live.
 
 reply
-- Opening line must reference something specific and substantive from the client's message (a property, a detail, a question raised) — never a meta-statement about reading or noting their message ("I've taken note of...", "I understand you have concerns...", "Thanks for your detailed message..." are all banned openers), and never the pleasantries "thanks for reaching out," "I'd be happy to help," or "looking forward to hearing from/speaking with you."
-- Match the complexity of the client's message — if several properties or concerns are raised, visibly address each, combining related points naturally rather than listing action items.
-- Maintain a calm, confident, leadership tone.
-- Do NOT speculate, reassure, or give personal opinions. If asked for an opinion or comparison, acknowledge it warmly and note you'll discuss it together — without answering it.
+- The opening line MUST reference a specific, concrete detail from the client’s message (a property, an issue, a question, or a scheduling request). It must NOT use meta‑statements (“I’ve taken note of…”, “I understand your concerns…”) or pleasantries (“Thanks for reaching out”, “Happy to help”, “Great to hear…”).
+- Allowed opener pattern: “[Direct reference to the client’s message].” Examples:
+  • “About the furnace noise at 12 Maplewood Drive—”
+  • “Regarding the special assessment the condo board mentioned—”
+  • “On your question about renting the parking spot—”
+  • “For tomorrow afternoon—”
+- After the opener, address each substantive point the client raised, combining related issues naturally rather than listing action items.
+- Maintain a calm, confident, leadership tone. No speculation, reassurance, or personal opinions.
+- If the client asked for an opinion, comparison, or evaluation, acknowledge the request without answering it, and note it will be discussed together.
 - Confirm any scheduling specifics the client proposed.
-- May carry rapport-building warmth subtly; never list rapport questions explicitly.
+- Use concrete verbs that match action_items (“Contact”, “Ask”, “Confirm”, “Get”, “Schedule”). Do NOT use vague verbs (“look into”, “check on”, “review”, “investigate”).
+- The reply may include subtle warmth but must NOT explicitly list rapport questions.
+
 
 Worked example
 
