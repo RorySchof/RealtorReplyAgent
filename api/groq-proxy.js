@@ -1,14 +1,10 @@
 // groq-proxy.js
 
 import Groq from "groq-sdk";
-// import { validateAgentOutput } from "../src/validateAgentOutput.js";
-// import { rewriteActionItems, rewriteReplyOpening } from "../src/repairs.js";
-
 
 export const config = {
   runtime: "nodejs"
 };
-
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -93,23 +89,23 @@ export default async function handler(req, res) {
     console.error("[DIAG] groq-proxy — choice.message.content end:", content.slice(-200));
 
     // --- EXTRACT JSON OBJECT FROM MODEL OUTPUT ---
-
-
     let parsed;
     try {
-      // Extract ONLY from the model's content, not the raw Groq envelope
-      console.error("[DIAG] groq-proxy — JSON extraction match target: content.match");
-      const jsonMatch = content.match(/\{[\s\S]*?\}/);
-      console.error("[DIAG] groq-proxy — jsonMatch found:", !!jsonMatch);
-      console.error("[DIAG] groq-proxy — jsonMatch[0] length:", jsonMatch?.[0]?.length ?? null);
+      console.error("[DIAG] groq-proxy — JSON extraction match target: content.match (global)");
 
-      if (!jsonMatch) {
+      // Get ALL JSON blocks, not just the first
+      const jsonMatches = content.match(/\{[\s\S]*?\}/g);
+
+      console.error("[DIAG] groq-proxy — jsonMatches found:", !!jsonMatches);
+      console.error("[DIAG] groq-proxy — number of matches:", jsonMatches?.length ?? 0);
+
+      if (!jsonMatches || jsonMatches.length === 0) {
         console.error("NO JSON OBJECT FOUND IN MODEL OUTPUT");
-        console.error("MODEL CONTENT START:", content.slice(0, 200));
-        console.error("MODEL CONTENT END:", content.slice(-200));
         parsed = {};
       } else {
-        const jsonString = jsonMatch[0];
+        // Use the LAST JSON block — the model's actual output
+        const jsonString = jsonMatches[jsonMatches.length - 1];
+        console.error("[DIAG] groq-proxy — using last JSON block length:", jsonString.length);
 
         try {
           parsed = JSON.parse(jsonString);
@@ -125,40 +121,10 @@ export default async function handler(req, res) {
       parsed = {};
     }
 
-    // --- VALIDATE & CLEAN MODEL OUTPUT ---
-    // const { cleaned, flags } = validateAgentOutput(parsed);
-
-    // console.error("[VALIDATOR] flaggedActionItems:", flags.flaggedActionItems);
-    // console.error("[VALIDATOR] replyFlagged:", flags.replyFlagged);
-    // console.error("[VALIDATOR] followup_items:", cleaned.followup_items);
-
-    // --- REPAIR FLAGGED ITEMS ---
-    // if (flags.flaggedActionItems.length > 0) {
-    //   try {
-    //     const rewritten = await rewriteActionItems(flags.flaggedActionItems);
-    //     cleaned.action_items.push(...rewritten);
-    //     console.error("[REPAIR] Rewrote action items:", rewritten);
-    //   } catch (err) {
-    //     console.error("[REPAIR] Failed to rewrite action items:", err);
-    //   }
-    // }
-
-    // if (flags.replyFlagged) {
-    //   try {
-    //     const originalEmail = messages[messages.length - 1].content;
-    //     const rewrittenReply = await rewriteReplyOpening(cleaned.reply, originalEmail);
-    //     cleaned.reply = rewrittenReply;
-    //     console.error("[REPAIR] Rewrote reply opener.");
-    //   } catch (err) {
-    //     console.error("[REPAIR] Failed to rewrite reply opener:", err);
-    //   }
-    // }
-
-
-
     // --- NOW LET SDK PARSE NORMALLY ---
-
     const completion = await promise;
+
+    // --- RETURN PARSED JSON + RAW COMPLETION ---
     return res.status(200).json({ parsed, completion });
 
   } catch (err) {
@@ -166,11 +132,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Groq proxy failed" });
   }
 }
-
-//     // --- RETURN PARSED JSON + RAW COMPLETION ---
-//     return res.status(200).json({ parsed: cleaned, completion });
-//   } catch (err) {
-//     console.error("Groq proxy error:", err);
-//     return res.status(500).json({ error: "Groq proxy failed" });
-//   }
-// }
