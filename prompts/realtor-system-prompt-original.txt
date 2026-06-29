@@ -213,27 +213,3 @@ JSON structure:
 Return ONLY the JSON object. Nothing else.
 
 
-# from huggingface_hub import InferenceClient
-
-# client = InferenceClient(
-#     "meta-llama/Llama-3.1-70B-Instruct",
-#     token=""
-# )
-
-# with open("prompts/system-prompt.txt", "r") as f:
-#     system_prompt = f.read()
-
-# with open("prompts/test-email.txt", "r") as f:
-#     user_message = f.read()
-
-# response = client.chat_completion(
-#     model="meta-llama/Llama-3.1-70B-Instruct",
-#     messages=[
-#         {"role": "system", "content": system_prompt},
-#         {"role": "user", "content": user_message}
-#     ],
-#     max_tokens=2048,
-#     temperature=0.2
-# )
-
-# print(response.choices[0].message["content"])
