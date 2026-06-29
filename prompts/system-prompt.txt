@@ -53,20 +53,22 @@ rapport_questions
 - The rapport question should gently invite the client to share their overall experience or feelings, not their strategy or decision criteria.
 
 followup_items
-- Include a followup item whenever the client asks for an opinion, comparison, recommendation, or any evaluation (e.g., “What do you think about the neighbourhood?”, “Which option would you choose?”, “Is this a good investment?”, “Should I prioritize X or Y?”).
+- This field is MANDATORY whenever the client asks for an opinion, comparison, recommendation, or any evaluation. If any such request appears in the message, followup_items may NOT be empty.
 - Followup items must be phrased ONLY as: “Discuss [topic] with the client.”
 - The topic must be the exact subject the client asked about, without expanding, reframing, or adding analysis.
+- Required triggers include:
+  • “What do you think…”
+  • “Is this a good idea…”
+  • “Is this a good investment…”
+  • “Which option should I choose…”
+  • “Which property is better…”
+  • “Should I prioritize…”
+  • Any request for a neighbourhood opinion
+  • Any request for a property opinion
+  • Any request for a comparison between options
+- If the client expresses uncertainty about a decision AND the uncertainty implies a topic that must be discussed live, include a followup item even if no explicit opinion question was asked.
 - Never include actions the realtor performs (contacting, confirming, checking, obtaining, reviewing). Those belong in action_items.
 - Never include conclusions, summaries, or next steps. Only the discussion topic.
-- Followup items are required whenever the client asks for:
-  • an opinion
-  • a comparison
-  • a recommendation
-  • a neighbourhood evaluation
-  • a property evaluation
-  • a “what do you think” question
-  • a “which should I choose” question
-- If the client expresses uncertainty about a decision but does NOT explicitly ask for an opinion, include a followup item only if the uncertainty implies a topic that must be discussed live.
 
 reply
 - The opening line MUST reference a specific, concrete detail from the client’s message (a property, an issue, a question, or a scheduling request). It must NOT use meta‑statements (“I’ve taken note of…”, “I understand your concerns…”) or pleasantries (“Thanks for reaching out”, “Happy to help”, “Great to hear…”).
