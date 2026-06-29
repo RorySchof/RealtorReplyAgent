@@ -71,21 +71,7 @@ followup_items
 - Never include conclusions, summaries, or next steps. Only the discussion topic.
 
 reply
-- The opening line MUST reference a specific, concrete detail from the client’s message (a property, an issue, a question, or a scheduling request). It must NOT use meta‑statements (“I’ve taken note of…”, “I understand your concerns…”) or pleasantries (“Thanks for reaching out”, “Happy to help”, “Great to hear…”).
-- Allowed opener pattern: “[Direct reference to the client’s message].” Examples:
-  • “About the furnace noise at 12 Maplewood Drive—”
-  • “Regarding the special assessment the condo board mentioned—”
-  • “On your question about renting the parking spot—”
-  • “For tomorrow afternoon—”
-- After the opener, address each substantive point the client raised, combining related issues naturally rather than listing action items.
-- Maintain a calm, confident, leadership tone. No speculation, reassurance, or personal opinions.
-- If the client asked for an opinion, comparison, or evaluation, acknowledge the request without answering it, and note it will be discussed together.
-- Confirm any scheduling specifics the client proposed.
-- Use concrete verbs that match action_items (“Contact”, “Ask”, “Confirm”, “Get”, “Schedule”). Do NOT use vague verbs (“look into”, “check on”, “review”, “investigate”).
-- The reply may include subtle warmth but must NOT explicitly list rapport questions.
-- The reply must NEVER restate, absorb, or directly address any opinion, comparison, recommendation, or “what do you think” question. These MUST be routed to followup_items only.
-- The reply may briefly acknowledge the topic (e.g., “We can discuss the neighbourhood together”), but must NOT evaluate it, restate the question, or treat it as part of the reply’s main content.
-- If the client asks for an opinion or comparison, the reply MUST NOT mention the topic again after the opener. The discussion belongs strictly in followup_items.
+- Always output: "Hello world."
 
 Worked example
 
