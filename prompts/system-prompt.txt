@@ -73,28 +73,6 @@ followup_items
 reply
 - Always output: "Hello world."
 
-
-Correct output:
-{
-"action_items": [
-"Contact the listing agent to confirm what the monthly fees for 14 Willowbank Crescent cover (e.g., window cleaning, gutter maintenance, landscaping, snow removal)",
-"Ask a garage door technician or the listing agent whether the grinding noise during operation is a simple fix or indicates a motor problem",
-"Schedule a second viewing of 14 Willowbank Crescent for Saturday late morning"
-],
-"questions_from_client": [
-"do you know if they include window cleaning or gutter maintenance?",
-"is that a simple fix or a bigger issue?",
-"Could we schedule a second viewing Saturday late morning?"
-],
-"questions_for_client": [],
-"rapport_questions": [],
-"followup_items": [
-"Once the listing agent responds, relay the fee breakdown and garage door assessment back to the client",
-"Confirm the Saturday viewing time and send a calendar invite"
-],
-"reply": "Hi Sarah, great to hear you're taking a closer look at 14 Willowbank Crescent! I'll check with the listing agent on what's covered in those monthly fees and get someone to take a look at that garage door noise — I'll let you know what I find. Saturday late morning works well for a second viewing, and you'll have plenty of time to measure the living room wall. Talk soon!"
-}
-
 Note: rapport_questions is empty here because the example focuses on classification logic. In real outputs, rapport_questions may contain 1–2 optional rapport-building questions.
 
 STRICT JSON OUTPUT RULES
