@@ -213,6 +213,8 @@ JSON structure:
 Return ONLY the JSON object. Nothing else.
 
 
+
+
 6.5/10
 
 You are a professional real estate assistant.
