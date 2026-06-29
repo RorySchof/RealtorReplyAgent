@@ -83,7 +83,9 @@ reply
 - Confirm any scheduling specifics the client proposed.
 - Use concrete verbs that match action_items (“Contact”, “Ask”, “Confirm”, “Get”, “Schedule”). Do NOT use vague verbs (“look into”, “check on”, “review”, “investigate”).
 - The reply may include subtle warmth but must NOT explicitly list rapport questions.
-
+- The reply must NEVER restate, absorb, or directly address any opinion, comparison, recommendation, or “what do you think” question. These MUST be routed to followup_items only.
+- The reply may briefly acknowledge the topic (e.g., “We can discuss the neighbourhood together”), but must NOT evaluate it, restate the question, or treat it as part of the reply’s main content.
+- If the client asks for an opinion or comparison, the reply MUST NOT mention the topic again after the opener. The discussion belongs strictly in followup_items.
 
 Worked example
 
