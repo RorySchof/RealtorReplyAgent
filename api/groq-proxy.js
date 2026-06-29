@@ -127,7 +127,7 @@ export default async function handler(req, res) {
 
     // --- VALIDATE & CLEAN MODEL OUTPUT ---
 
-    const { cleaned, flags } = validateAgentOutput(parsed);
+    // const { cleaned, flags } = validateAgentOutput(parsed);
 
     // Log what was flagged (diagnostic only)
     console.error("[VALIDATOR] flaggedActionItems:", flags.flaggedActionItems);

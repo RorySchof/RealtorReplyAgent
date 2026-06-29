@@ -63,10 +63,6 @@ export function validateAgentOutput(parsed) {
   cleaned.client_questions = (cleaned.client_questions || [])
     .filter(q => !CLIENT_Q_BANNED.test(q));
 
- 
-
-  
-    
 
   //
   // ACTION ITEMS
