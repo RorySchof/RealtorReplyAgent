@@ -58,8 +58,17 @@ export function validateAgentOutput(parsed) {
   //
   // CLIENT QUESTIONS
   //
-  cleaned.client_questions = (cleaned.client_questions || [])
-    .filter(q => !CLIENT_Q_BANNED.test(q));
+
+  
+  // cleaned.client_questions = (cleaned.client_questions || [])
+  //   .filter(q => !CLIENT_Q_BANNED.test(q));
+
+  //   if (cleaned.client_questions) {
+  //     cleaned.client_questions = [];
+  //   }
+
+    cleaned.client_questions = [];
+    
 
   //
   // ACTION ITEMS
