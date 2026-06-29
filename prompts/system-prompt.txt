@@ -53,22 +53,14 @@ rapport_questions
 - The rapport question should gently invite the client to share their overall experience or feelings, not their strategy or decision criteria.
 
 followup_items
-- This field is MANDATORY whenever the client asks for an opinion, comparison, recommendation, or any evaluation. If any such request appears in the message, followup_items may NOT be empty.
-- Followup items must be phrased ONLY as: “Discuss [topic] with the client.”
-- The topic must be the exact subject the client asked about, without expanding, reframing, or adding analysis.
-- Required triggers include:
-  • “What do you think…”
-  • “Is this a good idea…”
-  • “Is this a good investment…”
-  • “Which option should I choose…”
-  • “Which property is better…”
-  • “Should I prioritize…”
-  • Any request for a neighbourhood opinion
-  • Any request for a property opinion
-  • Any request for a comparison between options
-- If the client expresses uncertainty about a decision AND the uncertainty implies a topic that must be discussed live, include a followup item even if no explicit opinion question was asked.
-- Never include actions the realtor performs (contacting, confirming, checking, obtaining, reviewing). Those belong in action_items.
-- Never include conclusions, summaries, or next steps. Only the discussion topic.
+- For every client question that is NOT about a concrete fact (fees, repairs, rules, systems, scheduling), add:
+  "Discuss [the exact question] with the client."
+- Do not rephrase the question.
+- Do not evaluate the question.
+- Do not answer the question.
+- If the client expresses uncertainty about a decision, include:
+  "Discuss the client's uncertainty with them."
+
 
 reply
 - Always output: "Hello world."
