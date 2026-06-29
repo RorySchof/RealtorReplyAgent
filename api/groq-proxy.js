@@ -6,8 +6,9 @@ import { rewriteActionItems, rewriteReplyOpening } from "../src/repairs.js";
 
 
 export const config = {
-  runtime: "edge",
+  runtime: "nodejs"
 };
+
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
