@@ -126,41 +126,33 @@ export default async function handler(req, res) {
     }
 
     // --- VALIDATE & CLEAN MODEL OUTPUT ---
+    const { cleaned, flags } = validateAgentOutput(parsed);
 
-    // const { cleaned, flags } = validateAgentOutput(parsed);
-
-    // Log what was flagged (diagnostic only)
     console.error("[VALIDATOR] flaggedActionItems:", flags.flaggedActionItems);
     console.error("[VALIDATOR] replyFlagged:", flags.replyFlagged);
-
-    // TODO: In next step, we will add repair calls here.
-    // For now, just pass cleaned forward.
+    console.error("[VALIDATOR] followup_items:", cleaned.followup_items);
 
     // --- REPAIR FLAGGED ITEMS ---
+    if (flags.flaggedActionItems.length > 0) {
+      try {
+        const rewritten = await rewriteActionItems(flags.flaggedActionItems);
+        cleaned.action_items.push(...rewritten);
+        console.error("[REPAIR] Rewrote action items:", rewritten);
+      } catch (err) {
+        console.error("[REPAIR] Failed to rewrite action items:", err);
+      }
+    }
 
-// 1. Rewrite vague action items
-if (flags.flaggedActionItems.length > 0) {
-  try {
-    const rewritten = await rewriteActionItems(flags.flaggedActionItems);
-    cleaned.action_items.push(...rewritten);
-    console.error("[REPAIR] Rewrote action items:", rewritten);
-  } catch (err) {
-    console.error("[REPAIR] Failed to rewrite action items:", err);
-  }
-}
-
-// 2. Rewrite reply opener if flagged
-if (flags.replyFlagged) {
-  try {
-    // Use the last user message as the grounding source
-    const originalEmail = messages[messages.length - 1].content;
-    const rewrittenReply = await rewriteReplyOpening(cleaned.reply, originalEmail);
-    cleaned.reply = rewrittenReply;
-    console.error("[REPAIR] Rewrote reply opener.");
-  } catch (err) {
-    console.error("[REPAIR] Failed to rewrite reply opener:", err);
-  }
-}
+    if (flags.replyFlagged) {
+      try {
+        const originalEmail = messages[messages.length - 1].content;
+        const rewrittenReply = await rewriteReplyOpening(cleaned.reply, originalEmail);
+        cleaned.reply = rewrittenReply;
+        console.error("[REPAIR] Rewrote reply opener.");
+      } catch (err) {
+        console.error("[REPAIR] Failed to rewrite reply opener:", err);
+      }
+    }
 
 
 

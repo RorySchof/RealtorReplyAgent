@@ -25,6 +25,7 @@ action_items
 - "Research," "investigate," "look into," and "review" may NEVER be the leading verb, even if a contact is named later in the same sentence. Name the contact immediately, not after the verb.
 - No hedging ("potentially," "possibly," "may need to," "if necessary") — state the contact directly.
 - One item per distinct task. Never bundle tasks across properties.
+- Client uncertainty about fit, long-term plans, or whether to make an offer is NOT an action item — route it to followup_items.
 
 questions_from_client
 - Questions the client explicitly asked in their email.
@@ -58,14 +59,46 @@ followup_items
 - Do not rephrase the question.
 - Do not evaluate the question.
 - Do not answer the question.
-- If the client expresses uncertainty about a decision, include:
+- If the client expresses uncertainty about a decision (e.g., whether to make an offer, long-term fit, or which option to choose), include:
   "Discuss the client's uncertainty with them."
+- CRITICAL: questions_from_client and followup_items work together. Every non-fact, non-scheduling question in questions_from_client MUST also produce a matching followup_item. Extracting the question verbatim is not enough — you must also add the followup_item.
+- Use ONLY the format "Discuss [exact question] with the client." or "Discuss the client's uncertainty with them." The verbs analyze, compare, evaluate, determine, decide, assess, or weigh must never appear.
 
 
 reply
 - Always output: "Hello world."
 
-Note: rapport_questions is empty here because the example focuses on classification logic. In real outputs, rapport_questions may contain 1–2 optional rapport-building questions.
+Worked example
+
+Client message:
+"Hi Rory, I visited 22 Briarwood Lane this morning. The basement had a damp smell — do you know if that usually means there's a leak or just poor ventilation? The seller also mentioned a maintenance fee increase coming next year, but didn't give details. Can you find out what the new amount will be? I'm thinking about making an offer, but I'm not sure if this place fits my long-term plan. Could we talk sometime tomorrow? Morning or afternoon both work for me. Also — what do you think about the neighbourhood compared to the other places we've seen? I'm feeling a bit overwhelmed with everything."
+
+Correct output:
+{
+"action_items": [
+"Contact the seller's agent to inquire whether the damp smell in the basement at 22 Briarwood Lane indicates a leak or poor ventilation",
+"Contact the seller's agent or property manager to confirm the new maintenance fee amount for next year"
+],
+"questions_from_client": [
+"do you know if that usually means there's a leak or just poor ventilation?",
+"Can you find out what the new amount will be?",
+"Could we talk sometime tomorrow?",
+"what do you think about the neighbourhood compared to the other places we've seen?"
+],
+"questions_for_client": [
+"Morning or afternoon — which works better for you tomorrow?"
+],
+"rapport_questions": [
+"How are you feeling about everything so far?"
+],
+"followup_items": [
+"Discuss what do you think about the neighbourhood compared to the other places we've seen? with the client.",
+"Discuss the client's uncertainty with them."
+],
+"reply": "Hello world."
+}
+
+Note: Fact and scheduling questions appear in questions_from_client for verbatim extraction but do NOT get followup_items. Only opinion, comparison, and decision-uncertainty content goes in followup_items.
 
 STRICT JSON OUTPUT RULES
 - Output ONLY a single valid JSON object.
