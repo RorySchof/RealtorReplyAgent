@@ -1,6 +1,9 @@
 // groq-proxy.js
 
 import Groq from "groq-sdk";
+import { validateAgentOutput } from "../src/validateAgentOutput.js";
+import { rewriteActionItems, rewriteReplyOpening } from "../src/repairs.js";
+
 
 export const config = {
   runtime: "edge",
@@ -116,13 +119,52 @@ export default async function handler(req) {
       parsed = {};
     }
 
+    // --- VALIDATE & CLEAN MODEL OUTPUT ---
+
+    const { cleaned, flags } = validateAgentOutput(parsed);
+
+    // Log what was flagged (diagnostic only)
+    console.error("[VALIDATOR] flaggedActionItems:", flags.flaggedActionItems);
+    console.error("[VALIDATOR] replyFlagged:", flags.replyFlagged);
+
+    // TODO: In next step, we will add repair calls here.
+    // For now, just pass cleaned forward.
+
+    // --- REPAIR FLAGGED ITEMS ---
+
+// 1. Rewrite vague action items
+if (flags.flaggedActionItems.length > 0) {
+  try {
+    const rewritten = await rewriteActionItems(flags.flaggedActionItems);
+    cleaned.action_items.push(...rewritten);
+    console.error("[REPAIR] Rewrote action items:", rewritten);
+  } catch (err) {
+    console.error("[REPAIR] Failed to rewrite action items:", err);
+  }
+}
+
+// 2. Rewrite reply opener if flagged
+if (flags.replyFlagged) {
+  try {
+    // Use the last user message as the grounding source
+    const originalEmail = messages[messages.length - 1].content;
+    const rewrittenReply = await rewriteReplyOpening(cleaned.reply, originalEmail);
+    cleaned.reply = rewrittenReply;
+    console.error("[REPAIR] Rewrote reply opener.");
+  } catch (err) {
+    console.error("[REPAIR] Failed to rewrite reply opener:", err);
+  }
+}
+
+
+
     // --- NOW LET SDK PARSE NORMALLY ---
     const completion = await promise;
 
     // --- RETURN PARSED JSON + RAW COMPLETION ---
     return new Response(
       JSON.stringify({
-        parsed,
+        parsed: cleaned,
         completion,
       }),
       {
@@ -130,7 +172,6 @@ export default async function handler(req) {
         headers: { "Content-Type": "application/json" },
       }
     );
-
   } catch (err) {
     console.error("Groq proxy error:", err);
     return new Response(JSON.stringify({ error: "Groq proxy failed" }), {
