@@ -1,8 +1,8 @@
 // groq-proxy.js
 
 import Groq from "groq-sdk";
-import { validateAgentOutput } from "../src/validateAgentOutput.js";
-import { rewriteActionItems, rewriteReplyOpening } from "../src/repairs.js";
+// import { validateAgentOutput } from "../src/validateAgentOutput.js";
+// import { rewriteActionItems, rewriteReplyOpening } from "../src/repairs.js";
 
 
 export const config = {
@@ -126,43 +126,51 @@ export default async function handler(req, res) {
     }
 
     // --- VALIDATE & CLEAN MODEL OUTPUT ---
-    const { cleaned, flags } = validateAgentOutput(parsed);
+    // const { cleaned, flags } = validateAgentOutput(parsed);
 
-    console.error("[VALIDATOR] flaggedActionItems:", flags.flaggedActionItems);
-    console.error("[VALIDATOR] replyFlagged:", flags.replyFlagged);
-    console.error("[VALIDATOR] followup_items:", cleaned.followup_items);
+    // console.error("[VALIDATOR] flaggedActionItems:", flags.flaggedActionItems);
+    // console.error("[VALIDATOR] replyFlagged:", flags.replyFlagged);
+    // console.error("[VALIDATOR] followup_items:", cleaned.followup_items);
 
     // --- REPAIR FLAGGED ITEMS ---
-    if (flags.flaggedActionItems.length > 0) {
-      try {
-        const rewritten = await rewriteActionItems(flags.flaggedActionItems);
-        cleaned.action_items.push(...rewritten);
-        console.error("[REPAIR] Rewrote action items:", rewritten);
-      } catch (err) {
-        console.error("[REPAIR] Failed to rewrite action items:", err);
-      }
-    }
+    // if (flags.flaggedActionItems.length > 0) {
+    //   try {
+    //     const rewritten = await rewriteActionItems(flags.flaggedActionItems);
+    //     cleaned.action_items.push(...rewritten);
+    //     console.error("[REPAIR] Rewrote action items:", rewritten);
+    //   } catch (err) {
+    //     console.error("[REPAIR] Failed to rewrite action items:", err);
+    //   }
+    // }
 
-    if (flags.replyFlagged) {
-      try {
-        const originalEmail = messages[messages.length - 1].content;
-        const rewrittenReply = await rewriteReplyOpening(cleaned.reply, originalEmail);
-        cleaned.reply = rewrittenReply;
-        console.error("[REPAIR] Rewrote reply opener.");
-      } catch (err) {
-        console.error("[REPAIR] Failed to rewrite reply opener:", err);
-      }
-    }
+    // if (flags.replyFlagged) {
+    //   try {
+    //     const originalEmail = messages[messages.length - 1].content;
+    //     const rewrittenReply = await rewriteReplyOpening(cleaned.reply, originalEmail);
+    //     cleaned.reply = rewrittenReply;
+    //     console.error("[REPAIR] Rewrote reply opener.");
+    //   } catch (err) {
+    //     console.error("[REPAIR] Failed to rewrite reply opener:", err);
+    //   }
+    // }
 
 
 
     // --- NOW LET SDK PARSE NORMALLY ---
-    const completion = await promise;
 
-    // --- RETURN PARSED JSON + RAW COMPLETION ---
-    return res.status(200).json({ parsed: cleaned, completion });
+    const completion = await promise;
+    return res.status(200).json({ parsed, completion });
+
   } catch (err) {
     console.error("Groq proxy error:", err);
     return res.status(500).json({ error: "Groq proxy failed" });
   }
 }
+
+//     // --- RETURN PARSED JSON + RAW COMPLETION ---
+//     return res.status(200).json({ parsed: cleaned, completion });
+//   } catch (err) {
+//     console.error("Groq proxy error:", err);
+//     return res.status(500).json({ error: "Groq proxy failed" });
+//   }
+// }
