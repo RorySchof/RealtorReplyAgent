@@ -70,12 +70,14 @@ export default async function handler(req, res) {
 
     // --- SAFE FALLBACKS ---
     const actionItems = agent.action_items || [];
-    const clientQuestions = agent.client_questions || [];
+
+    const questionsFromClient = agent.questions_from_client || [];
+    const questionsForClient = agent.questions_for_client || [];
+
     const rapportQuestions = agent.rapport_questions || [];
-    const followUps = agent.followups || agent.followup_items || [];
-    const draftReply = agent.draft_reply || agent.reply || "";
-    const questionsForClient = agent.client_questions || agent.questions_for_client || [];
-    const questionsFromClient = extractQuestionsFromClient(cleanMessage);
+    const followUps = agent.followup_items || [];   // model only outputs followup_items now
+    const draftReply = agent.reply || "";
+
 
 
     // --- EXTRACT CLIENT EMAIL FROM FORWARDED HEADER ---
