@@ -37,9 +37,17 @@ function logMessagesDiagnostics(label, messages) {
   });
 }
 
-export default async function handler(req) {
+async function readJsonBody(req) {
+  const chunks = [];
+  for await (const chunk of req) {
+    chunks.push(chunk);
+  }
+  return JSON.parse(Buffer.concat(chunks).toString());
+}
+
+export default async function handler(req, res) {
   try {
-    const { messages } = await req.json();
+    const { messages } = await readJsonBody(req);
 
     // --- NORMALIZE MESSAGES ---
     const normalizedMessages = messages.map((m) => ({
@@ -72,10 +80,7 @@ export default async function handler(req) {
       console.error("GROQ RAW JSON PARSE ERROR:", e.message);
       console.error("GROQ RAW TEXT START:", rawText.slice(0, 80));
       console.error("GROQ RAW TEXT END:", rawText.slice(-80));
-      return new Response(
-        JSON.stringify({ error: "Failed to parse raw Groq JSON" }),
-        { status: 500 }
-      );
+      return res.status(500).json({ error: "Failed to parse raw Groq JSON" });
     }
 
     const choice = rawJson?.choices?.[0];
@@ -163,21 +168,9 @@ if (flags.replyFlagged) {
     const completion = await promise;
 
     // --- RETURN PARSED JSON + RAW COMPLETION ---
-    return new Response(
-      JSON.stringify({
-        parsed: cleaned,
-        completion,
-      }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return res.status(200).json({ parsed: cleaned, completion });
   } catch (err) {
     console.error("Groq proxy error:", err);
-    return new Response(JSON.stringify({ error: "Groq proxy failed" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return res.status(500).json({ error: "Groq proxy failed" });
   }
 }

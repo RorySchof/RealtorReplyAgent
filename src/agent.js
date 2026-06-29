@@ -1,8 +1,9 @@
 
-// src/agent.js
+// src/agent.js (IGNORE THIS FILE)
+
+import wrapperPrompt from "../prompts/wrapper-prompt.txt?raw";
 
 console.log("[DIAG] LOADED agent.js FROM:", import.meta.url);
-
 
 console.log("[DIAG] wrapperPrompt length:", wrapperPrompt?.length);
 
