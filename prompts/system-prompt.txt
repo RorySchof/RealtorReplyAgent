@@ -32,17 +32,26 @@ questions_from_client
 - These must NOT appear in questions_for_client.
 
 questions_for_client
-- Questions ONLY the client can answer, needed for the realtor to proceed — nothing else.
-- Property facts (fees, systems, repairs, tenants, offers) go in action_items/followup_items, not here.
-- NEVER include questions about budget, priorities, financial goals, risk tolerance, investment strategy, or decision-making criteria, under any phrasing — even when the client asked for an opinion, comparison, or recommendation. That request belongs in followup_items, not as a question back to the client.
-- Never include questions the client already asked — those belong in questions_from_client.
-- Empty is the normal, expected result for most messages.
+- Include a question ONLY when the realtor genuinely cannot proceed without information that only the client can provide AND that information is not already stated in the client’s message.
+- Most messages should produce an empty array. Only include a question when the client’s message contains a clear gap that blocks an action item (e.g., “Which day works best for you?” when the client proposed a meeting but gave multiple possible times).
+- Never include questions the client already asked. Those belong in questions_from_client.
+- Never include questions about property facts (fees, systems, repairs, tenants, offers, assessments, rules, noise issues, neighbourhood details). Those belong in action_items or followup_items.
+- Never include questions about budget, priorities, financial goals, risk tolerance, investment strategy, decision-making criteria, or long-term plans. If the client asks for an opinion or comparison, route that request to followup_items, not here.
+- Allowed question types:
+  • Scheduling clarification (only if the client proposed multiple options or was vague)
+  • Access/logistics clarification (e.g., “Do you prefer in-person or virtual for this conversation?”)
+  • Document availability (e.g., “Do you already have the status certificate, or should I request it?”)
+- Never ask the client to evaluate, compare, or justify anything. This field is strictly operational.
+
 
 rapport_questions
-- A single, general question about the client's overall feelings or experience so far — never naming a specific property, address, or option, and never asking the client to evaluate, weigh, or list concerns/issues. "What are your biggest concerns about each property?" is analysis, not rapport — it asks the client to evaluate options.
-- Plain human warmth only (e.g., "How are you feeling about everything so far?"), not a survey of each option.
-- Must not duplicate a question the client already asked.
-- Must never reference risk, reward, resale, ROI, renovation potential, or any property-specific fact.
+- Include exactly ONE rapport question when the client expresses uncertainty, hesitation, overwhelm, or is making a significant decision. If the client expresses no emotional context, leave this field empty.
+- The rapport question must be general and emotional, never analytical. It must NOT reference any specific property, address, feature, repair, fee, tenant, offer, or neighbourhood.
+- Allowed examples: "How are you feeling about everything so far?", "What feels most important to you right now as you think this through?"
+- The rapport question must NOT duplicate a question the client already asked.
+- The rapport question must NOT ask the client to evaluate options, list concerns, compare properties, or describe risk, reward, ROI, renovation potential, or any property-specific fact.
+- The rapport question should gently invite the client to share their overall experience or feelings, not their strategy or decision criteria.
+
 
 followup_items
 - Topics for a live conversation with the client, stated as a topic only — never an action the realtor performs, never a conclusion.
