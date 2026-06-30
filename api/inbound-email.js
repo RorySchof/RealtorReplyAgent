@@ -3,6 +3,8 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { validateAgentOutput, replyOpenerViolates } from "./validate-agent-output.js";
+
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const wrapperPrompt = readFileSync(join(__dirname, "../prompts/wrapper-prompt.txt"), "utf8");
@@ -30,23 +32,6 @@ export default async function handler(req, res) {
     // --- TWO-PASS GROQ PIPELINE ---
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `https://${process.env.VERCEL_URL}`;
 
-    // PASS 1 — Preprocessing (wrapper)
-    // const pass1Messages = [
-    //   { role: "system", content: wrapperPrompt },
-    //   { role: "user", content: cleanMessage }
-    // ];
-    // logMessagesDiagnostics("PASS 1 — inbound-email outbound to groq-proxy", pass1Messages);
-
-    // const pass1Res = await fetch(`${baseUrl}/api/groq-proxy`, {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ messages: pass1Messages })
-    // });
-
-    // const pass1Completion = await pass1Res.json();
-
-    // const preprocessed = pass1Completion.parsed?.preprocessed ?? pass1Completion.parsed ?? {};
-
     // PASS 1 DISABLED — send raw email directly to PASS 2
     const preprocessed = { raw_email: cleanMessage };
 
@@ -65,20 +50,63 @@ export default async function handler(req, res) {
 
     const pass2Completion = await pass2Res.json();
 
-    // --- EXTRACT MODEL OUTPUT ---
-    const agent = pass2Completion.parsed;
+// --- EXTRACT MODEL OUTPUT ---
+const rawAgent = pass2Completion.parsed;
 
-    // --- SAFE FALLBACKS ---
-    const actionItems = agent.action_items || [];
+// --- VALIDATE AND CLEAN ---
 
-    const questionsFromClient = agent.questions_from_client || [];
-    const questionsForClient = agent.questions_for_client || [];
+const { cleaned: agent, flags, replyNeedsRegeneration } = validateAgentOutput(rawAgent, cleanMessage);
 
-    const rapportQuestions = agent.rapport_questions || [];
-    const followUps = agent.followup_items || [];   // model only outputs followup_items now
-    const draftReply = agent.reply || "";
+if (flags.length > 0) {
+  console.error("[VALIDATOR] flags:", flags);
+}
 
+// --- REPLY OPENER REGENERATION (narrow single-sentence fix) ---
+let draftReply = agent.reply || "";
 
+if (replyNeedsRegeneration) {
+  console.error("[VALIDATOR] reply opener violation — requesting narrow regeneration");
+  const regenMessages = [
+    { role: "system", content: SYSTEM_PROMPT },
+    {
+      role: "user",
+      content: JSON.stringify({ raw_email: cleanMessage })
+    },
+    {
+      role: "assistant",
+      content: agent.reply
+    },
+    {
+      role: "user",
+      content: `The opening sentence of your reply violates the rules. Rewrite ONLY the opening sentence so that it begins with the property name or a specific detail from the client's message. Do not change anything else. Return the full reply as a single string with the corrected opener.`
+    }
+  ];
+
+  try {
+    const regenRes = await fetch(`${baseUrl}/api/groq-proxy`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: regenMessages })
+    });
+    const regenCompletion = await regenRes.json();
+    const regenReply = regenCompletion.parsed?.reply || "";
+    if (regenReply && !replyOpenerViolates(regenReply)) {
+      draftReply = regenReply;
+      console.error("[VALIDATOR] reply opener regenerated successfully");
+    } else {
+      console.error("[VALIDATOR] regeneration did not fix opener — using original");
+    }
+  } catch (err) {
+    console.error("[VALIDATOR] regeneration failed:", err);
+  }
+}
+
+// --- SAFE FALLBACKS ---
+const actionItems = agent.action_items || [];
+const questionsFromClient = agent.questions_from_client || [];
+const questionsForClient = agent.questions_for_client || [];
+const rapportQuestions = agent.rapport_questions || [];
+const followUps = agent.followup_items || [];
 
     // --- EXTRACT CLIENT EMAIL FROM FORWARDED HEADER ---
     const fromLine = data['body-plain']?.split(/\r?\n/).find((line) =>
