@@ -3,7 +3,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { validateAgentOutput, replyOpenerViolates } from "./validate-agent-output.js";
+import { validateAgentOutput, replyOpenerViolates, stripReplyLeakage } from "./validate-agent-output.js";
 
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -89,9 +89,10 @@ if (replyNeedsRegeneration) {
       body: JSON.stringify({ messages: regenMessages })
     });
     const regenCompletion = await regenRes.json();
-    const regenReply = regenCompletion.parsed?.reply || "";
+    const regenReply = stripReplyLeakage(regenCompletion.parsed?.reply || "");
     if (regenReply && !replyOpenerViolates(regenReply)) {
       draftReply = regenReply;
+      agent.reply = regenReply;
       console.error("[VALIDATOR] reply opener regenerated successfully");
     } else {
       console.error("[VALIDATOR] regeneration did not fix opener — using original");
@@ -101,7 +102,9 @@ if (replyNeedsRegeneration) {
   }
 }
 
-// --- SAFE FALLBACKS ---
+agent.reply = draftReply;
+
+// --- SAFE FALLBACKS (from cleaned agent) ---
 const actionItems = agent.action_items || [];
 const questionsFromClient = agent.questions_from_client || [];
 const questionsForClient = agent.questions_for_client || [];
