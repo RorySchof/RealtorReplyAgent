@@ -1,0 +1,106 @@
+[
+    {
+      "id": 1,
+      "description": "Reply opener — I'd like to follow up",
+      "email": "Hi Rory, I’m worried about the furnace at 12 Oakridge. Can you check the service history?"
+    },
+    {
+      "id": 2,
+      "description": "Reply opener — Thanks for reaching out",
+      "email": "Hi, I’m wondering about the roof age at 48 Juniper Ridge."
+    },
+    {
+      "id": 3,
+      "description": "Reply opener — Great to hear from you",
+      "email": "Rory, can you confirm if the basement at 22 Willowbank has ever had moisture issues?"
+    },
+    {
+      "id": 4,
+      "description": "Reply opener — I understand you have",
+      "email": "I’m trying to figure out if the condo fees at 200 Danforth are worth it."
+    },
+    {
+      "id": 5,
+      "description": "Reply opener — I appreciate you sharing",
+      "email": "The deck at 14 Maplewood felt soft. Should I be worried?"
+    },
+    {
+      "id": 6,
+      "description": "Reply opener — I wanted to follow up",
+      "email": "Can you check if 9 Carlaw has any recent electrical updates?"
+    },
+    {
+      "id": 7,
+      "description": "Reply opener — Just following up",
+      "email": "Rory, any updates on the viewing schedule for 48 Juniper Ridge?"
+    },
+  
+    {
+      "id": 8,
+      "description": "Rapport banned topic — properties",
+      "email": "I’m torn between a few properties and not sure what fits best."
+    },
+    {
+      "id": 9,
+      "description": "Rapport banned topic — options",
+      "email": "What options do I have if the inspection comes back rough?"
+    },
+    {
+      "id": 10,
+      "description": "Rapport banned topic — condo",
+      "email": "I’m comparing the condo at 200 Danforth with the house on Juniper."
+    },
+    {
+      "id": 11,
+      "description": "Rapport banned topic — ROI / risk",
+      "email": "Is the place on Willowbank a good ROI long‑term?"
+    },
+    {
+      "id": 12,
+      "description": "Rapport banned topic — renovation / financing",
+      "email": "Would 14 Maplewood need major renovations? I’m trying to plan financing."
+    },
+    {
+      "id": 13,
+      "description": "Rapport banned topic — better fit / compare",
+      "email": "Which one is a better fit — 48 Juniper Ridge or the condo?"
+    },
+  
+    {
+      "id": 14,
+      "description": "Followup banned verb — analyze",
+      "email": "Can you analyze the inspection report for 12 Oakridge?"
+    },
+    {
+      "id": 15,
+      "description": "Followup banned verb — compare",
+      "email": "Can you compare 48 Juniper Ridge with the condo?"
+    },
+    {
+      "id": 16,
+      "description": "Followup banned verb — evaluate / determine",
+      "email": "Can you evaluate whether the furnace age should be a dealbreaker?"
+    },
+    {
+      "id": 17,
+      "description": "Followup banned verb — recommend",
+      "email": "What would you recommend between the two places?"
+    },
+  
+    {
+      "id": 18,
+      "description": "Action item duplicate — furnace phrasing",
+      "email": "Can you check the furnace age? Also, can you confirm the furnace age with the seller?"
+    },
+    {
+      "id": 19,
+      "description": "Action item duplicate — deck phrasing",
+      "email": "The back deck felt soft. Can you ask the seller about the deck condition?"
+    },
+    {
+      "id": 20,
+      "description": "Action item duplicate — viewing phrasing",
+      "email": "I want to book a second viewing. Also, can you schedule another showing?"
+    }
+  ]
+  
