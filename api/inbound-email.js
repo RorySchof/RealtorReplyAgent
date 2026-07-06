@@ -78,7 +78,7 @@ if (replyNeedsRegeneration) {
     },
     {
       role: "user",
-      content: `The opening sentence of your reply violates the rules. Rewrite ONLY the opening sentence so that it begins with the property name or a specific detail from the client's message. Do not change anything else. Return the full reply as a single string with the corrected opener.`
+      content: `The opening sentence of your reply violates the rules. Rewrite ONLY the opening sentence so that it begins with the property name or a specific detail from the client's message. Do not change anything else. Return a JSON object with a single field: reply. The reply field must contain the full regenerated reply as a string.`
     }
   ];
 
