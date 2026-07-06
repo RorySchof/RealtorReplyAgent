@@ -89,6 +89,8 @@ if (replyNeedsRegeneration) {
       body: JSON.stringify({ messages: regenMessages })
     });
     const regenCompletion = await regenRes.json();
+    console.error("[REGEN RAW COMPLETION]", JSON.stringify(regenCompletion, null, 2));
+
     const regenReply = stripReplyLeakage(regenCompletion.parsed?.reply || "");
     if (regenReply && !replyOpenerViolates(regenReply)) {
       draftReply = regenReply;
