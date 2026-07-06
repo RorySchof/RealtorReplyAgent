@@ -1,31 +1,171 @@
-# test 70b model
+#!/usr/bin/env python3
 
-import requests
 import json
+import os
+import subprocess
+import sys
 
-# Load system prompt
-with open("prompts/system-prompt.txt", "r") as f:
-    system_prompt = f.read()
+BASE_URL = os.environ.get(
+    "EVAL_BASE_URL", "https://realtor-reply-agent.vercel.app"
+)
+ROOT = os.path.dirname(os.path.abspath(__file__))
 
-# Load test email
-with open("prompts/test-email.txt", "r") as f:
-    user_message = f.read()
 
-# Prepare payload for your Groq proxy
-payload = {
-    "messages": [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": user_message}
-    ]
+def read_email():
+    if len(sys.argv) > 1:
+        return sys.argv[1]
+    with open(os.path.join(ROOT, "prompts/test-email.txt"), encoding="utf-8") as f:
+        return f.read()
+
+
+NODE_RUNNER = r"""
+import handler from "./api/inbound-email.js";
+
+const email = JSON.parse(process.env.EVAL_EMAIL);
+const baseUrl = process.env.EVAL_BASE_URL;
+
+process.env.NEXT_PUBLIC_BASE_URL = baseUrl;
+
+let outboundText = "";
+const originalFetch = globalThis.fetch;
+
+globalThis.fetch = async (url, init) => {
+  if (String(url).includes("api.mailgun.net")) {
+    outboundText = new URLSearchParams(init.body).get("text") || "";
+    return { ok: true, text: async () => "Queued" };
+  }
+  return originalFetch(url, init);
+};
+
+function sectionItems(text, name, nextNames) {
+  const start = text.indexOf(name + ":");
+  if (start === -1) return [];
+  let end = text.length;
+  for (const next of nextNames) {
+    const idx = text.indexOf(next + ":", start + name.length);
+    if (idx !== -1 && idx < end) end = idx;
+  }
+  const block = text.slice(start + name.length + 1, end).trim();
+  if (!block) return [];
+  return block
+    .split("\n")
+    .map((line) => line.replace(/^- /, "").trim())
+    .filter(Boolean);
 }
 
-# Call your deployed Vercel proxy
-response = requests.post(
-    "https://realtor-reply-agent.vercel.app/api/groq-proxy",
-    json=payload
-)
+function parseOutboundEmail(text) {
+  const replyStart = text.indexOf("Draft Reply:");
+  const replyEnd = text.indexOf("Send to Client:");
+  const reply =
+    replyStart === -1
+      ? ""
+      : text
+          .slice(
+            replyStart + "Draft Reply:".length,
+            replyEnd === -1 ? text.length : replyEnd
+          )
+          .trim();
 
-data = response.json()
+  return {
+    action_items: sectionItems(text, "Action Items", [
+      "Questions FROM Client",
+      "Questions FOR Client",
+      "Rapport Questions",
+      "Follow-Ups",
+      "Draft Reply",
+    ]),
+    questions_from_client: sectionItems(text, "Questions FROM Client", [
+      "Questions FOR Client",
+      "Rapport Questions",
+      "Follow-Ups",
+      "Draft Reply",
+    ]),
+    questions_for_client: sectionItems(text, "Questions FOR Client", [
+      "Rapport Questions",
+      "Follow-Ups",
+      "Draft Reply",
+    ]),
+    rapport_questions: sectionItems(text, "Rapport Questions", [
+      "Follow-Ups",
+      "Draft Reply",
+    ]),
+    followup_items: sectionItems(text, "Follow-Ups", [
+      "Draft Reply",
+      "Rapport Questions",
+    ]),
+    reply,
+  };
+}
 
-# Print the cleaned JSON (this is your real agent output)
-print(json.dumps(data["parsed"], indent=2))
+const body = new URLSearchParams({
+  sender: "eval@test.local",
+  subject: "Eval test",
+  "body-plain": email,
+}).toString();
+
+const req = {
+  method: "POST",
+  headers: { "content-type": "application/x-www-form-urlencoded" },
+  on(event, cb) {
+    if (event === "data") cb(Buffer.from(body));
+    if (event === "end") cb();
+  },
+};
+
+let statusCode = 500;
+let responseBody = null;
+
+const res = {
+  status(code) {
+    statusCode = code;
+    return this;
+  },
+  json(payload) {
+    responseBody = payload;
+  },
+};
+
+await handler(req, res);
+
+if (statusCode !== 200) {
+  console.error("inbound-email failed:", statusCode, responseBody);
+  process.exit(1);
+}
+
+if (!outboundText) {
+  console.error("No outbound email captured from inbound-email handler");
+  process.exit(1);
+}
+
+console.log(JSON.stringify(parseOutboundEmail(outboundText), null, 2));
+"""
+
+
+def main():
+    email = read_email()
+    env = {
+        **os.environ,
+        "EVAL_EMAIL": json.dumps(email),
+        "EVAL_BASE_URL": BASE_URL,
+    }
+
+    result = subprocess.run(
+        ["node", "--input-type=module", "-e", NODE_RUNNER],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+
+    if result.returncode != 0:
+        if result.stderr:
+            print(result.stderr, file=sys.stderr)
+        if result.stdout:
+            print(result.stdout, file=sys.stderr)
+        sys.exit(result.returncode)
+
+    print(result.stdout.rstrip())
+
+
+if __name__ == "__main__":
+    main()
