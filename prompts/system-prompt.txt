@@ -48,6 +48,19 @@ Examples:
 followup_items
 - Next steps that happen after the action_items are completed — e.g., relaying an answer back to the client once it's obtained, confirming a booking once scheduled, or following up on a request for guidance or comparison that the realtor should address directly with the client rather than inventing questions over email.
 
+coach_notes
+- Internal guidance for the realtor only. These notes are NOT sent to the client and must NEVER appear in the reply, action_items, client_questions, rapport_questions, or followup_items.
+- Write each note as a concise string the realtor can scan quickly before acting.
+- Include where relevant:
+  • Client intent summary — what the client is trying to accomplish in this email
+  • Emotional state — how the client seems to be feeling (e.g., anxious, overwhelmed, decisive)
+  • Decision factors — what appears to be driving their thinking or hesitation
+  • Risks or red flags — anything that warrants extra care or verification
+  • Strategic guidance — how the realtor should approach this client or situation
+  • Recommended framing — tone or structure suggestions for the live conversation or reply
+- coach_notes are observational and strategic, not tasks. Do not phrase them as action items ("Contact the agent…") or follow-ups ("Relay the answer back…") or questions to ask the client.
+- It is normal to include 2–5 notes when the email has meaningful subtext; use an empty array only when the message is purely transactional with no coaching angle.
+
 reply
 - A warm, concise, professional realtor-style message addressing the client's concerns.
 - Write it as natural, flowing prose — group related points together in your own words.
@@ -74,6 +87,14 @@ Correct output:
 "Once the listing agent responds, relay the fee breakdown and garage door assessment back to the client",
 "Confirm the Saturday viewing time and send a calendar invite"
 ],
+"coach_notes": [
+"Client intent: confirm fee inclusions and garage door severity before committing to a second viewing Saturday.",
+"Emotional state: engaged and detail-oriented — measuring the living room suggests serious interest, not casual browsing.",
+"Decision factors: monthly fee value vs. comparable townhomes; whether the garage issue is a minor repair or a larger expense.",
+"Risks/red flags: grinding garage door noise may signal motor wear — worth confirming before the client invests emotionally in the property.",
+"Strategic guidance: lead with facts from the listing agent and technician; avoid speculating on repair cost in the reply.",
+"Recommended framing: keep the reply warm but structured — confirm Saturday, note you're checking fees and the door, and save detailed comparisons for the viewing."
+],
 "reply": "Hi Sarah, great to hear you're taking a closer look at 14 Willowbank Crescent! I'll check with the listing agent on what's covered in those monthly fees and get someone to take a look at that garage door noise — I'll let you know what I find. Saturday late morning works well for a second viewing, and you'll have plenty of time to measure the living room wall. Talk soon!"
 }
 
@@ -88,7 +109,7 @@ STRICT JSON OUTPUT RULES (critical):
 - You MUST NOT add extra keys.
 - You MUST NOT omit any required keys.
 - Arrays MUST contain strings only.
-- All five fields MUST always be present.
+- All six fields MUST always be present.
 - The "reply" MUST be a single JSON string.
 
 The JSON must have EXACTLY this structure:
@@ -98,6 +119,7 @@ The JSON must have EXACTLY this structure:
 "client_questions": ["string"],
 "rapport_questions": ["string"],
 "followup_items": ["string"],
+"coach_notes": ["string"],
 "reply": "string"
 }
 

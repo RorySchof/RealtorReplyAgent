@@ -73,6 +73,7 @@ export default async function handler(req, res) {
     const clientQuestions = agent.client_questions || [];
     const rapportQuestions = agent.rapport_questions || [];
     const followUps = agent.followups || agent.followup_items || [];
+    const coachNotes = agent.coach_notes || [];
     const draftReply = agent.draft_reply || agent.reply || "";
     const questionsForClient = agent.client_questions || agent.questions_for_client || [];
     const questionsFromClient = extractQuestionsFromClient(cleanMessage);
@@ -104,6 +105,9 @@ ${rapportQuestions.map(q => "- " + q).join("\n")}
 
 Follow-Ups:
 ${followUps.map(f => "- " + f).join("\n")}
+
+Coach's Notes:
+${coachNotes.map(n => "- " + n).join("\n")}
 
 Draft Reply:
 ${draftReply}
@@ -141,6 +145,11 @@ ${questionsForClient.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
 <h3>Follow-Ups:</h3>
 <ul>
 ${followUps.map(f => `<li>${escapeHtml(f)}</li>`).join("")}
+</ul>
+
+<h3>Coach's Notes:</h3>
+<ul>
+${coachNotes.map(n => `<li>${escapeHtml(n)}</li>`).join("")}
 </ul>
 
 <h3>Rapport Questions:</h3>
