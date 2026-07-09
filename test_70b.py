@@ -70,28 +70,27 @@ function parseOutboundEmail(text) {
     action_items: sectionItems(text, "Action Items", [
       "Questions FROM Client",
       "Questions FOR Client",
-      "Rapport Questions",
+      "Coach's Notes",
       "Follow-Ups",
       "Draft Reply",
     ]),
     questions_from_client: sectionItems(text, "Questions FROM Client", [
       "Questions FOR Client",
-      "Rapport Questions",
+      "Coach's Notes",
       "Follow-Ups",
       "Draft Reply",
     ]),
     questions_for_client: sectionItems(text, "Questions FOR Client", [
-      "Rapport Questions",
+      "Coach's Notes",
       "Follow-Ups",
       "Draft Reply",
     ]),
-    rapport_questions: sectionItems(text, "Rapport Questions", [
+    coach_notes: sectionItems(text, "Coach's Notes", [
       "Follow-Ups",
       "Draft Reply",
     ]),
     followup_items: sectionItems(text, "Follow-Ups", [
       "Draft Reply",
-      "Rapport Questions",
     ]),
     reply,
   };

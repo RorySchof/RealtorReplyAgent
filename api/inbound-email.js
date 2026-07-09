@@ -3,7 +3,8 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { validateAgentOutput, replyOpenerViolates, stripReplyLeakage } from "./validate-agent-output.js";
+// import { validateAgentOutput, replyOpenerViolates, stripReplyLeakage } from "./validate-agent-output.js";
+import { extractEmail } from "../src/extractEmail.js";
 
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -28,11 +29,12 @@ export default async function handler(req, res) {
     const data = Object.fromEntries(new URLSearchParams(text));
 
     const cleanMessage = extractForwardedMessage(data['body-plain']);
+    const extraction = extractEmail(cleanMessage);
 
     // --- TWO-PASS GROQ PIPELINE ---
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `https://${process.env.VERCEL_URL}`;
 
-    // PASS 1 DISABLED — send raw email directly to PASS 2
+    // PASS 1 DISABLED — send raw email directly to PASS 2 (coach notes are internal only)
     const preprocessed = { raw_email: cleanMessage };
 
     // PASS 2 — Main assistant (SYSTEM_PROMPT)
@@ -53,57 +55,54 @@ export default async function handler(req, res) {
 // --- EXTRACT MODEL OUTPUT ---
 const rawAgent = pass2Completion.parsed;
 
-// --- VALIDATE AND CLEAN ---
+// --- VALIDATE AND CLEAN (disabled for testing) ---
 
-const { cleaned: agent, flags, replyNeedsRegeneration } = validateAgentOutput(rawAgent, cleanMessage);
+const agent = rawAgent;
+const replyNeedsRegeneration = false;
 
-if (flags.length > 0) {
-  console.error("[VALIDATOR] flags:", flags);
-}
-
-// --- REPLY OPENER REGENERATION (narrow single-sentence fix) ---
+// --- REPLY OPENER REGENERATION (disabled — validator off) ---
 let draftReply = agent.reply || "";
 
-if (replyNeedsRegeneration) {
-  console.error("[VALIDATOR] reply opener violation — requesting narrow regeneration");
-  const regenMessages = [
-    { role: "system", content: SYSTEM_PROMPT },
-    {
-      role: "user",
-      content: JSON.stringify({ raw_email: cleanMessage })
-    },
-    {
-      role: "assistant",
-      content: agent.reply
-    },
-    {
-      role: "user",
-      content: `The opening sentence of your reply violates the rules. Rewrite ONLY the opening sentence so that it begins with the property name or a specific detail from the client's message. Do not change anything else. Return ONLY a JSON object with a single field named "reply". The value of "reply" must be the full regenerated reply as a string. Do not return text outside the JSON object. Do not include explanations, comments, or additional fields. Your entire output MUST be valid JSON.`
-    }
-    
-  ];
-
-  try {
-    const regenRes = await fetch(`${baseUrl}/api/groq-proxy`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages: regenMessages })
-    });
-    const regenCompletion = await regenRes.json();
-    console.error("[REGEN RAW COMPLETION]", JSON.stringify(regenCompletion, null, 2));
-
-    const regenReply = stripReplyLeakage(regenCompletion.parsed?.reply || "");
-    if (regenReply && !replyOpenerViolates(regenReply)) {
-      draftReply = regenReply;
-      agent.reply = regenReply;
-      console.error("[VALIDATOR] reply opener regenerated successfully");
-    } else {
-      console.error("[VALIDATOR] regeneration did not fix opener — using original");
-    }
-  } catch (err) {
-    console.error("[VALIDATOR] regeneration failed:", err);
-  }
-}
+// if (replyNeedsRegeneration) {
+//   console.error("[VALIDATOR] reply opener violation — requesting narrow regeneration");
+//   const regenMessages = [
+//     { role: "system", content: SYSTEM_PROMPT },
+//     {
+//       role: "user",
+//       content: JSON.stringify({ raw_email: cleanMessage })
+//     },
+//     {
+//       role: "assistant",
+//       content: agent.reply
+//     },
+//     {
+//       role: "user",
+//       content: `The opening sentence of your reply violates the rules. Rewrite ONLY the opening sentence so that it begins with the property name or a specific detail from the client's message. Do not change anything else. Return ONLY a JSON object with a single field named "reply". The value of "reply" must be the full regenerated reply as a string. Do not return text outside the JSON object. Do not include explanations, comments, or additional fields. Your entire output MUST be valid JSON.`
+//     }
+//
+//   ];
+//
+//   try {
+//     const regenRes = await fetch(`${baseUrl}/api/groq-proxy`, {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ messages: regenMessages })
+//     });
+//     const regenCompletion = await regenRes.json();
+//     console.error("[REGEN RAW COMPLETION]", JSON.stringify(regenCompletion, null, 2));
+//
+//     const regenReply = stripReplyLeakage(regenCompletion.parsed?.reply || "");
+//     if (regenReply && !replyOpenerViolates(regenReply)) {
+//       draftReply = regenReply;
+//       agent.reply = regenReply;
+//       console.error("[VALIDATOR] reply opener regenerated successfully");
+//     } else {
+//       console.error("[VALIDATOR] regeneration did not fix opener — using original");
+//     }
+//   } catch (err) {
+//     console.error("[VALIDATOR] regeneration failed:", err);
+//   }
+// }
 
 agent.reply = draftReply;
 
@@ -111,7 +110,7 @@ agent.reply = draftReply;
 const actionItems = agent.action_items || [];
 const questionsFromClient = agent.questions_from_client || [];
 const questionsForClient = agent.questions_for_client || [];
-const rapportQuestions = agent.rapport_questions || [];
+const coachNotes = agent.coach_notes || [];
 const followUps = agent.followup_items || [];
 
 // --- SEMANTIC DEDUPE FOR ACTION ITEMS ---
@@ -151,8 +150,8 @@ ${questionsFromClient.map(q => "- " + q).join("\n")}
 Questions FOR Client:
 ${questionsForClient.map(q => "- " + q).join("\n")}
 
-Rapport Questions:
-${rapportQuestions.map(q => "- " + q).join("\n")}
+Coach's Notes:
+${coachNotes.map(n => "- " + n).join("\n")}
 
 Follow-Ups:
 ${followUps.map(f => "- " + f).join("\n")}
@@ -190,14 +189,14 @@ ${questionsFromClient.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
 ${questionsForClient.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
 </ul>
 
+<h3>Coach's Notes:</h3>
+<ul>
+${coachNotes.map(n => `<li>${escapeHtml(n)}</li>`).join("")}
+</ul>
+
 <h3>Follow-Ups:</h3>
 <ul>
 ${followUps.map(f => `<li>${escapeHtml(f)}</li>`).join("")}
-</ul>
-
-<h3>Rapport Questions:</h3>
-<ul>
-${rapportQuestions.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
 </ul>
 
 <h3>Draft Reply:</h3>

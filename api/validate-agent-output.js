@@ -3,41 +3,7 @@
 // Runs after groq-proxy returns parsed JSON, before fields are assigned in inbound-email.js.
 // Strips rule violations deterministically. Flags reply opener for narrow regeneration.
 
-// --- RAPPORT: banned topic fragments ---
-const RAPPORT_BANNED_TOPICS = [
-  /\bproperties\b/i,
-  /\boptions\b/i,
-  /\bcondo\b/i,
-  /\bjuniper\b/i,
-  /\bmaplewood\b/i,
-  /\bdanforth\b/i,
-  /\bcarlaw\b/i,
-  /\bkingston\b/i,
-  /\brookridge\b/i,
-  /\bwillowbank\b/i,
-  /\brisk\b/i,
-  /\breward\b/i,
-  /\broi\b/i,
-  /\brenovation\b/i,
-  /\brepair(s)?\b/i,
-  /\bcondition\b/i,
-  /\bfinancing\b/i,
-  /\baffordab/i,
-  /\bbudget\b/i,
-  /\binvestment\b/i,
-  /\bcash flow\b/i,
-  /\btradeoff\b/i,
-  /\bcompar(e|ing|ison)\b/i,
-  /\bwhich one\b/i,
-  /\bprefer(ence|s)?\b/i,
-  /\bbetter fit\b/i,
-  /\bdecid(e|ing|ion)\b/i,
-  /\blong.term\b/i,
-  /\bconcerned\b/i,
-  /\bworried\b/i,
-  /\bunsure\b/i,
-  /\btorn\b/i,
-];
+import { generateCoachNotes } from "../src/generateCoachNotes.js";
 
 // --- REPLY: banned opener fragments (checked against first 120 chars) ---
 const REPLY_BANNED_OPENERS = [
@@ -191,78 +157,23 @@ function deduplicateActionItems(items) {
   });
 }
 
-function extractClientSignificantWords(emailText) {
-  const normalized = (emailText || "")
-    .replace(/\r\n/g, "\n")
-    .replace(/\s+/g, " ")
-    .toLowerCase();
-  return new Set(
-    normalized
-      .split(/\s+/)
-      .map((w) => w.replace(/[^a-z]/g, ""))
-      .filter((w) => w.length > 4)
-  );
-}
-
-function extractClientQuestions(emailText) {
-  const normalized = emailText.replace(/\r\n/g, "\n").replace(/\s+/g, " ");
-  const segments = normalized.split(/(?<=[.?!])\s+/);
-  return segments
-    .map((s) => s.trim().toLowerCase())
-    .filter((s) => s.endsWith("?"));
-}
-
-function rapportEchoesClient(question, emailText) {
-  const q = question.toLowerCase();
-  const clientWords = extractClientSignificantWords(emailText);
-  const questionWords = q
-    .split(/\s+/)
-    .map((w) => w.replace(/[^a-z]/g, ""))
-    .filter((w) => w.length > 4);
-  const overlap = questionWords.filter((w) => clientWords.has(w));
-  if (overlap.length >= 2) return true;
-
-  const clientQuestions = extractClientQuestions(emailText);
-  const clientQuestionWords = new Set(
-    clientQuestions.flatMap((cq) =>
-      cq.split(/\s+/).filter((w) => w.length > 4)
-    )
-  );
-  const cqOverlap = questionWords.filter((w) => clientQuestionWords.has(w));
-  return cqOverlap.length >= 2;
-}
-
-function validateRapportQuestions(questions, emailText) {
-  return questions.filter((q) => {
-    if (RAPPORT_BANNED_TOPICS.some((rx) => rx.test(q))) return false;
-    if (rapportEchoesClient(q, emailText)) return false;
-    return true;
-  });
-}
-
 export function replyOpenerViolates(reply) {
   const opener = (reply || "").trim().slice(0, 120);
   return REPLY_BANNED_OPENERS.some((rx) => rx.test(opener));
 }
 
-export function validateAgentOutput(agent, cleanMessage) {
+export function validateAgentOutput(agent, cleanMessage, extraction) {
   const flags = [];
   const cleaned = { ...agent };
+
+  delete cleaned.rapport_questions;
+  cleaned.coach_notes = generateCoachNotes(cleanMessage, extraction);
 
   const deduped = deduplicateActionItems(cleaned.action_items || []);
   if (deduped.length < (cleaned.action_items || []).length) {
     flags.push("action_items:duplicates_removed");
   }
   cleaned.action_items = deduped;
-
-  const cleanedRapport = validateRapportQuestions(
-    cleaned.rapport_questions || [],
-    cleanMessage
-  );
-  if (cleanedRapport.length < (cleaned.rapport_questions || []).length) {
-    flags.push("rapport_questions:violations_stripped");
-  }
-  cleaned.rapport_questions = cleanedRapport;
 
   const cleanedFollowups = (cleaned.followup_items || []).filter((item) => {
     if (FOLLOWUP_BANNED_VERBS.test(item)) {
