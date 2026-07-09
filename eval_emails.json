@@ -1,106 +1,66 @@
 [
-    {
-      "id": 1,
-      "description": "Reply opener — I'd like to follow up",
-      "email": "Hi Rory, I’m worried about the furnace at 12 Oakridge. Can you check the service history?"
-    },
-    {
-      "id": 2,
-      "description": "Reply opener — Thanks for reaching out",
-      "email": "Hi, I’m wondering about the roof age at 48 Juniper Ridge."
-    },
-    {
-      "id": 3,
-      "description": "Reply opener — Great to hear from you",
-      "email": "Rory, can you confirm if the basement at 22 Willowbank has ever had moisture issues?"
-    },
-    {
-      "id": 4,
-      "description": "Reply opener — I understand you have",
-      "email": "I’m trying to figure out if the condo fees at 200 Danforth are worth it."
-    },
-    {
-      "id": 5,
-      "description": "Reply opener — I appreciate you sharing",
-      "email": "The deck at 14 Maplewood felt soft. Should I be worried?"
-    },
-    {
-      "id": 6,
-      "description": "Reply opener — I wanted to follow up",
-      "email": "Can you check if 9 Carlaw has any recent electrical updates?"
-    },
-    {
-      "id": 7,
-      "description": "Reply opener — Just following up",
-      "email": "Rory, any updates on the viewing schedule for 48 Juniper Ridge?"
-    },
   
-    {
-      "id": 8,
-      "description": "Rapport banned topic — properties",
-      "email": "I’m torn between a few properties and not sure what fits best."
-    },
-    {
-      "id": 9,
-      "description": "Rapport banned topic — options",
-      "email": "What options do I have if the inspection comes back rough?"
-    },
-    {
-      "id": 10,
-      "description": "Rapport banned topic — condo",
-      "email": "I’m comparing the condo at 200 Danforth with the house on Juniper."
-    },
-    {
-      "id": 11,
-      "description": "Rapport banned topic — ROI / risk",
-      "email": "Is the place on Willowbank a good ROI long‑term?"
-    },
-    {
-      "id": 12,
-      "description": "Rapport banned topic — renovation / financing",
-      "email": "Would 14 Maplewood need major renovations? I’m trying to plan financing."
-    },
-    {
-      "id": 13,
-      "description": "Rapport banned topic — better fit / compare",
-      "email": "Which one is a better fit — 48 Juniper Ridge or the condo?"
-    },
+  {
+    "id": 25,
+    "description": "Long email — duplicate action items phrased differently",
+    "email": "Hi Rory,\n\nI’ve been thinking about the mechanical systems at 123 Main St. The furnace looked older than I expected. When you get a moment, could you check the furnace age?\n\nAlso, if possible, can you confirm the furnace age with the seller? I just want to be sure we have accurate information.\n\nThanks again."
+  },
+  {
+    "id": 26,
+    "description": "Real world — furnace concern buried in narrative",
+    "email": "Hi Rory,\n\nWe really liked the place at 19 Larchwood, but I keep thinking about the furnace. It looked newer, but the seller didn’t mention anything in the disclosure. I’m not sure if I’m overthinking it.\n\nWhen you get a chance, could you find out the actual install date? I just want to make sure it’s not older than it looks.\n\nThanks again for all your help."
+  },
+  {
+    "id": 27,
+    "description": "Real world — multiple properties, only one actionable",
+    "email": "Rory,\n\nWe’ve been bouncing between a few places — 48 Juniper Ridge, 22 Willowbank, and that townhouse on Cedar. They all have pros and cons, and honestly my head is spinning.\n\nThe one thing I do need: can you check whether 48 Juniper Ridge ever had roof repairs? The shingles looked uneven.\n\nAppreciate it."
+  },
+  {
+    "id": 28,
+    "description": "Real world — buried inspection concern",
+    "email": "Hi Rory,\n\nThanks for sending over the inspection report. I read through most of it last night. The plumbing section was fine, but the electrical part confused me. The wording felt vague.\n\nCould you reach out to the inspector and ask what \"further evaluation recommended\" actually means? I don’t want to misinterpret it.\n\nLet me know when you hear back."
+  },
+  {
+    "id": 29,
+    "description": "Real world — soft deck concern with repeated phrasing",
+    "email": "Hey Rory,\n\nThe back deck at 14 Maplewood felt soft when I walked across it. Maybe it’s nothing, but it stuck with me.\n\nIf you can, could you ask the seller whether they’ve done any repairs on it? And also, can you check if the deck was ever replaced? Just want to know what we’re dealing with."
+  },
+  {
+    "id": 30,
+    "description": "Real world — viewing request buried under life updates",
+    "email": "Hi Rory,\n\nSorry for the slow reply — work has been chaos. I finally had time to think about the place on 9 Carlaw. I’d like to see it again now that things have calmed down.\n\nCould you book a second viewing sometime this week? Wednesday or Thursday would be ideal.\n\nThanks for being patient."
+  },
+  {
+    "id": 31,
+    "description": "Real world — HVAC concern with narrative fluff",
+    "email": "Rory,\n\nHope your weekend was good. Mine was a blur. Anyway, I keep thinking about the HVAC at 123 Main St. The unit looked older than the listing suggested, and the noise level seemed high.\n\nCan you check the service history and see if anything major was done in the last few years?\n\nThanks."
+  },
+  {
+    "id": 32,
+    "description": "Real world — basement moisture concern with emotional tone",
+    "email": "Hi Rory,\n\nI’m still thinking about the basement at 22 Willowbank. It didn’t smell damp, but the walls looked like they might have had moisture at some point. I’m nervous about buying something with hidden issues.\n\nCould you ask the seller if they’ve ever had water intrusion or if any waterproofing was done?\n\nThanks for understanding."
+  },
+  {
+    "id": 33,
+    "description": "Real world — roof concern with repeated phrasing",
+    "email": "Rory,\n\nThe roof at 48 Juniper Ridge is still on my mind. The inspector said it was \"serviceable,\" but that feels vague. When you get a moment, can you confirm the actual roof age?\n\nAlso, could you check with the seller whether they’ve replaced any sections recently?\n\nThanks again."
+  },
+  {
+    "id": 34,
+    "description": "Real world — inspection timeline confusion",
+    "email": "Hi Rory,\n\nI’m trying to wrap my head around the inspection timeline for 14 Maplewood. The seller mentioned something about \"next week,\" but I’m not sure what that means.\n\nCould you confirm the exact inspection date? I want to make sure I’m available.\n\nThanks."
+  },
+  {
+    "id": 35,
+    "description": "Real world — electrical concern with repeated request",
+    "email": "Hey Rory,\n\nI went through the electrical panel photos again for 12 Oakridge. Something looks off — the labeling seems inconsistent. Maybe it’s nothing, but I’d rather be sure.\n\nCan you check with the seller whether the panel was ever upgraded? And if possible, could you confirm the age of the wiring?\n\nThanks for digging into this."
+  },
+
+  {
+    "id": 36,
+    "description": "Nightmare messy — multi‑property confusion, repeated requests, emotional tone, buried action items",
+    "email": "Hi Rory,\n\nSorry for the late message — today has been a bit of a disaster. I’ve been trying to sort out my thoughts on everything we saw last week, but honestly I’m more confused now than before.\n\nSo, about 22 Willowbank — the basement still worries me. It didn’t smell damp, but the walls looked weird, like maybe there was moisture at some point. I know you said the inspector didn’t flag anything major, but I keep thinking about it. Could you check with the seller if they’ve ever had water issues? And maybe ask if any waterproofing was done? I don’t want to get stuck with a surprise.\n\nThen there’s 48 Juniper Ridge. The roof looked fine at first, but the shingles seemed uneven when I looked at the photos again. I’m not sure if that’s normal or if it means repairs were done. Could you find out the actual roof age? And also, if possible, can you check whether any sections were replaced recently? I don’t want to overreact, but I also don’t want to ignore something important.\n\nAnd I know we talked about 9 Carlaw already, but I keep going back and forth. Part of me thinks it’s the safest option, but part of me thinks I’m settling. I don’t know. Maybe I’m just tired.\n\nAnyway, when you get a moment, could you help me figure out what makes the most sense? I’m not asking for a recommendation, just… maybe help me understand the pros and cons again. Also, if you can, can you schedule another viewing for 9 Carlaw? I want to see it one more time before I lose my mind.\n\nThanks for being patient with me today."
+  }
   
-    {
-      "id": 14,
-      "description": "Followup banned verb — analyze",
-      "email": "Can you analyze the inspection report for 12 Oakridge?"
-    },
-    {
-      "id": 15,
-      "description": "Followup banned verb — compare",
-      "email": "Can you compare 48 Juniper Ridge with the condo?"
-    },
-    {
-      "id": 16,
-      "description": "Followup banned verb — evaluate / determine",
-      "email": "Can you evaluate whether the furnace age should be a dealbreaker?"
-    },
-    {
-      "id": 17,
-      "description": "Followup banned verb — recommend",
-      "email": "What would you recommend between the two places?"
-    },
   
-    {
-      "id": 18,
-      "description": "Action item duplicate — furnace phrasing",
-      "email": "Can you check the furnace age? Also, can you confirm the furnace age with the seller?"
-    },
-    {
-      "id": 19,
-      "description": "Action item duplicate — deck phrasing",
-      "email": "The back deck felt soft. Can you ask the seller about the deck condition?"
-    },
-    {
-      "id": 20,
-      "description": "Action item duplicate — viewing phrasing",
-      "email": "I want to book a second viewing. Also, can you schedule another showing?"
-    }
-  ]
-  
+]

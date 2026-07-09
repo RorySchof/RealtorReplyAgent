@@ -1,4 +1,4 @@
-//inbound-email.js (working!!)
+//inbound-email.js (working!!!)
 
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -78,8 +78,9 @@ if (replyNeedsRegeneration) {
     },
     {
       role: "user",
-      content: `The opening sentence of your reply violates the rules. Rewrite ONLY the opening sentence so that it begins with the property name or a specific detail from the client's message. Do not change anything else. Return a JSON object with a single field: reply. The reply field must contain the full regenerated reply as a string.`
+      content: `The opening sentence of your reply violates the rules. Rewrite ONLY the opening sentence so that it begins with the property name or a specific detail from the client's message. Do not change anything else. Return ONLY a JSON object with a single field named "reply". The value of "reply" must be the full regenerated reply as a string. Do not return text outside the JSON object. Do not include explanations, comments, or additional fields. Your entire output MUST be valid JSON.`
     }
+    
   ];
 
   try {
@@ -112,6 +113,22 @@ const questionsFromClient = agent.questions_from_client || [];
 const questionsForClient = agent.questions_for_client || [];
 const rapportQuestions = agent.rapport_questions || [];
 const followUps = agent.followup_items || [];
+
+// --- SEMANTIC DEDUPE FOR ACTION ITEMS ---
+const seen = new Set();
+const dedupedActionItems = [];
+
+for (const item of actionItems) {
+  const norm = normalizeActionItem(item);
+  if (!seen.has(norm)) {
+    seen.add(norm);
+    dedupedActionItems.push(item);
+  }
+}
+
+actionItems.length = 0;
+actionItems.push(...dedupedActionItems);
+
 
     // --- EXTRACT CLIENT EMAIL FROM FORWARDED HEADER ---
     const fromLine = data['body-plain']?.split(/\r?\n/).find((line) =>
@@ -247,6 +264,17 @@ margin-left:8px;
 }
 
 // --- HELPERS ---------------------------------------------------
+
+
+function normalizeActionItem(text) {
+  return text
+    .toLowerCase()
+    .replace(/contact|get|ask|confirm|reach out to|request/g, "")
+    .replace(/the seller|listing agent|agent/g, "")
+    .replace(/to|for|about|on|from/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
 function escapeHtml(text) {
   return String(text)

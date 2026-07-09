@@ -16,6 +16,17 @@ const MODEL = "llama-3.1-70b-versatile";
 const REQUIRED_KEYS = ["action_items", "client_questions", "followup_items", "reply"];
 
 // Diagnostic-only: fingerprint strings for log correlation (no functional use).
+
+function normalizeActionItem(text) {
+  return text
+    .toLowerCase()
+    .replace(/contact|get|ask|confirm|reach out to|request/g, "")
+    .replace(/the seller|listing agent|agent/g, "")
+    .replace(/to|for|about|on|from/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function diagHash(str) {
   if (str == null) return null;
   const s = String(str);
