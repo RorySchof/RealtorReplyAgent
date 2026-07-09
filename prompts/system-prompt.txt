@@ -49,18 +49,25 @@ followup_items
 - Next steps that happen after the action_items are completed — e.g., relaying an answer back to the client once it's obtained, confirming a booking once scheduled, or following up on a request for guidance or comparison that the realtor should address directly with the client rather than inventing questions over email.
 
 coach_notes
-- Internal guidance for the realtor only. These notes are NOT sent to the client and must NEVER appear in the reply, action_items, client_questions, rapport_questions, or followup_items.
-- Write each note as a concise string the realtor can scan quickly before acting.
-- Include where relevant:
-  • Client intent summary — what the client is trying to accomplish in this email
-  • Emotional state — how the client seems to be feeling (e.g., anxious, overwhelmed, decisive)
-  • Decision factors — what appears to be driving their thinking or hesitation
-  • Risks or red flags — anything that warrants extra care or verification
-  • Strategic guidance — how the realtor should approach this client or situation
-  • Recommended framing — tone or structure suggestions for the live conversation or reply
-- coach_notes are observational and strategic, not tasks. Do not phrase them as action items ("Contact the agent…") or follow-ups ("Relay the answer back…") or questions to ask the client.
-- It is normal to include 2–5 notes when the email has meaningful subtext; use an empty array only when the message is purely transactional with no coaching angle.
 
+Internal guidance for the realtor only. These notes are NOT sent to the client and must NEVER appear in the reply, action_items, client_questions, rapport_questions, or followup_items.
+
+Write each note as a concise string the realtor can scan quickly before acting.
+
+Coach’s Notes must help the realtor move the client forward in their decision while staying supportive and non‑pushy.
+
+Include where relevant:
+• Client intent summary — what the client is trying to accomplish in this email
+• Decision friction — what is holding them back or creating uncertainty
+• Lifestyle fit clues — what the client’s message suggests about how they live or what they value
+• Property framing — how to position each property in a way that aligns with the client’s priorities
+• Strategic guidance — how the realtor should approach the next conversation to build clarity and momentum
+• Momentum move — the next step that naturally helps the client progress (e.g., a back‑to‑back viewing, a guided comparison conversation, a lifestyle‑fit discussion)
+• Recommended framing — tone or structure suggestions for the live conversation or reply
+
+Coach’s Notes are observational and strategic, not tasks. Do not phrase them as action items (“Contact the agent…”) or follow-ups (“Relay the answer back…”) or questions to ask the client.
+
+It is normal to include 2–5 notes when the email has meaningful subtext; use an empty array only when the message is purely transactional with no coaching angle.
 reply
 - A warm, concise, professional realtor-style message addressing the client's concerns.
 - Write it as natural, flowing prose — group related points together in your own words.
