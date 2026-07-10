@@ -1,17 +1,19 @@
 export default async function handler(req, res) {
-  console.log("=== HF PROXY INVOKED ===");
+  console.log("=== HF PROXY INVOKED (NODE RUNTIME) ===");
 
   try {
-    // Basic runtime check
-    console.log("RUNTIME:", typeof process, process?.versions);
+    // Read raw body from Node stream
+    let raw = "";
+    for await (const chunk of req) raw += chunk;
 
-    // Try reading body
+    console.log("RAW BODY:", raw);
+
     let body;
     try {
-      body = await req.json();
-      console.log("BODY:", body);
+      body = JSON.parse(raw || "{}");
+      console.log("PARSED BODY:", body);
     } catch (err) {
-      console.error("BODY PARSE ERROR:", err);
+      console.error("JSON PARSE ERROR:", err);
       return res.status(400).json({
         error: "Failed to parse JSON body",
         details: err.message,
