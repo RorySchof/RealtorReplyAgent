@@ -21,6 +21,7 @@ Field definitions:
 action_items
 - Concrete, external tasks the realtor must do next to respond to this specific email.
 - Examples: contact the listing agent, contact a contractor/technician, schedule a viewing, pull documentation.
+- If client_questions includes a question about which property or option the client means, do not add a scheduling action item for every option as a workaround — that duplication is exactly the gap the client_questions entry exists to close. List only the actions that don't depend on the answer (e.g., contacting listing agents, arranging inspections); leave scheduling the actual viewing to followup_items, to happen once the client responds.
 
 client_questions
 - Questions ONLY the client themselves can answer, and only when the realtor genuinely cannot proceed without the answer — e.g., picking between named options the client raised, or a scheduling detail that's still missing.
@@ -30,6 +31,7 @@ client_questions
 - If the client asks the realtor for a personal opinion, comparison, or recommendation (e.g., "which one do you think suits me better?"), that request adds ZERO entries to client_questions. Do not react to it by inventing any question here, in any form — not a rephrase of it, not a layout question, not a trade-off question, not a lifestyle question. It belongs entirely in followup_items instead, as a conversation to have directly with the client.
 - A genuine scheduling or logistics gap is still a valid client_questions entry, even in the same email as a comparison request — e.g., if the client says they want to revisit "one of them" without saying which, ask which property, since the realtor can't book a specific viewing otherwise. That's a concrete blocker, not an invented preference question.
 - Ask only what's necessary to close the gap — don't pair it with extra hypothetical questions about scenarios the client never raised (e.g., asking whether they'd like to see both properties in one day when they only mentioned revisiting one).
+- The zero-entries rule for comparison/opinion requests holds even when a genuine blocking question (like which property to revisit) is already present in this array. Do not also add a rephrased version of the comparison request directed back at the client — e.g., "which property do you think would suit your lifestyle better?" is the same violation as the client's original question, just with the pronouns flipped. A legitimate scheduling question does not create room for this one too.
 - If the realtor can act on the email as written, leave this array empty — that is the normal, expected case.
 - Do NOT ask the client to restate anything they've already provided — preferences, concerns, feelings, priorities, availability, or scheduling times. Feelings or priorities already expressed may be gently reflected in rapport_questions, but never re-asked here.
 
