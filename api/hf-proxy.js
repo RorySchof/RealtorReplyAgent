@@ -1,8 +1,5 @@
 
-export const config = {
-    runtime: "nodejs20.x",
-  };
-  
+
   export default async function handler(req) {
     try {
       const { messages } = await req.json();
