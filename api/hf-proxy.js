@@ -1,20 +1,31 @@
-export const runtime = "nodejs20.x";
-
-export async function POST(request: Request) {
-  console.log("=== HF PROXY START ===");
+export default async function handler(req, res) {
+  console.log("=== HF PROXY INVOKED ===");
 
   try {
-    const body = await request.json();
-    console.log("Request JSON:", body);
+    // Basic runtime check
+    console.log("RUNTIME:", typeof process, process?.versions);
+
+    // Try reading body
+    let body;
+    try {
+      body = await req.json();
+      console.log("BODY:", body);
+    } catch (err) {
+      console.error("BODY PARSE ERROR:", err);
+      return res.status(400).json({
+        error: "Failed to parse JSON body",
+        details: err.message,
+      });
+    }
 
     const { messages } = body || {};
-    console.log("Messages:", messages);
+    console.log("MESSAGES:", messages);
 
     const prompt = Array.isArray(messages)
       ? messages.map((m) => `${m.role.toUpperCase()}: ${m.content}`).join("\n\n")
-      : "NO_MESSAGES_PROVIDED";
+      : "NO_MESSAGES";
 
-    console.log("Prompt:", prompt);
+    console.log("PROMPT:", prompt);
 
     console.log("HF KEY PRESENT:", !!process.env.HF_API_KEY);
     console.log("HF KEY LENGTH:", process.env.HF_API_KEY?.length);
@@ -27,7 +38,7 @@ export async function POST(request: Request) {
       },
     };
 
-    console.log("HF Payload:", hfPayload);
+    console.log("HF PAYLOAD:", hfPayload);
 
     const response = await fetch(
       "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3.1-70B-Instruct",
@@ -41,56 +52,40 @@ export async function POST(request: Request) {
       }
     );
 
-    console.log("HF Status:", response.status);
+    console.log("HF STATUS:", response.status);
 
-    const data = await response.json();
-    console.log("HF Raw Response:", data);
+    let data;
+    try {
+      data = await response.json();
+      console.log("HF RAW:", data);
+    } catch (err) {
+      console.error("HF JSON PARSE ERROR:", err);
+      return res.status(500).json({
+        error: "Failed to parse HF JSON",
+        details: err.message,
+      });
+    }
 
     const text =
       Array.isArray(data) && data[0]?.generated_text
         ? data[0].generated_text
         : data.generated_text || "";
 
-    console.log("HF Generated Text:", text);
+    console.log("HF TEXT:", text);
 
-    const jsonMatch = text.match(/\{[\s\S]*?\}/);
-    let parsed = {};
-
-    if (jsonMatch) {
-      try {
-        parsed = JSON.parse(jsonMatch[0]);
-        console.log("Parsed JSON:", parsed);
-      } catch (err) {
-        console.error("Failed to parse JSON from HF output:", err);
-        parsed = { error: "Failed to parse JSON from HF output" };
-      }
-    } else {
-      console.log("No JSON found in HF output");
-    }
-
-    console.log("=== HF PROXY SUCCESS ===");
-
-    return new Response(
-      JSON.stringify({
-        parsed,
-        raw: text,
-        hfStatus: response.status,
-        hfRaw: data,
-      }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
-    );
-  } catch (err: any) {
-    console.error("=== HF PROXY ERROR ===");
+    return res.status(200).json({
+      hfStatus: response.status,
+      hfRaw: data,
+      raw: text,
+    });
+  } catch (err) {
+    console.error("=== HF PROXY CRASH ===");
     console.error(err);
 
-    return new Response(
-      JSON.stringify({
-        error: "HF proxy failed",
-        details: err.message || err,
-        stack: err.stack || null,
-      }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+    return res.status(500).json({
+      error: "HF proxy crashed",
+      details: err.message,
+      stack: err.stack,
+    });
   }
 }
-
