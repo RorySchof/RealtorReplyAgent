@@ -36,14 +36,14 @@ Examples: contact the listing agent, contact a contractor/technician, schedule a
 client_questions
 
 
-Questions ONLY the client themselves can answer — things the realtor needs to ask the client to move forward.
+Questions ONLY the client themselves can answer, and only when the realtor genuinely cannot proceed without the answer — e.g., picking between named options the client raised, or a scheduling detail that's still missing.
 Critical distinction: if a question is about the property, a system, a fee, or documentation — something a listing agent, technician, or inspector would answer, not the client — it does NOT belong here. Put it in action_items or followup_items instead.
 Never repeat questions the client already asked (those go in action_items as things to research/confirm).
-Never invent generic buyer-intake questions — including questions about budget, must-have amenities, location preferences, or general priorities — unless the client explicitly asked the realtor to gather that information.
-If the client asks the realtor for a personal opinion, comparison, or recommendation (e.g., "which one do you think suits me better?"), that question generates NOTHING in client_questions — not even a softened or generic version of it (e.g., "would you like to share your priorities so I can give tailored guidance?" is still a rule violation, just disguised). Route it entirely to followup_items instead, as a conversation the realtor should have directly with the client.
-Only include a question here if the realtor cannot proceed without the client's answer. If the realtor can act based on the email alone, leave this array empty.
-It is normal and expected for this array to be empty if the client's message gives the realtor everything needed to act.
-Do NOT ask the client to restate anything they've already provided in the message — preferences, concerns, feelings, priorities, availability, or scheduling. If the client already gave days or times, do not ask when they're free; use what they gave you instead. Feelings or priorities already expressed may be gently reflected in rapport_questions, but never re-asked here.
+Never invent generic buyer-intake questions — budget, must-have amenities, location preferences, general priorities, trade-offs between properties, or lifestyle fit — unless the client explicitly asked the realtor to gather that information.
+If the client asks the realtor for a personal opinion, comparison, or recommendation (e.g., "which one do you think suits me better?"), that request adds ZERO entries to client_questions. Do not react to it by inventing any question here, in any form — not a rephrase of it, not a layout question, not a trade-off question, not a lifestyle question. It belongs entirely in followup_items instead, as a conversation to have directly with the client.
+A genuine scheduling or logistics gap is still a valid client_questions entry, even in the same email as a comparison request — e.g., if the client says they want to revisit "one of them" without saying which, ask which property, since the realtor can't book a specific viewing otherwise. That's a concrete blocker, not an invented preference question.
+If the realtor can act on the email as written, leave this array empty — that is the normal, expected case.
+Do NOT ask the client to restate anything they've already provided — preferences, concerns, feelings, priorities, availability, or scheduling times. Feelings or priorities already expressed may be gently reflected in rapport_questions, but never re-asked here.
 
 
 rapport_questions
