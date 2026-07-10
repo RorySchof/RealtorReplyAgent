@@ -19,7 +19,9 @@ export default async function handler(req, res) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "meta-llama/Llama-3.1-70B-Instruct", // confirm this id is live on router.huggingface.co
+        
+        model: "meta-llama/Llama-3.3-70B-Instruct:together",
+
         messages,           // pass your existing role/content array directly, no manual prompt templating needed
         temperature: 0.2,
         max_tokens: 2048,
