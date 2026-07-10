@@ -57,16 +57,27 @@ export default async function handler(req, res) {
     ];
     logMessagesDiagnostics("PASS 2 — inbound-email outbound to groq-proxy", pass2Messages);
 
-    const pass2Res = await fetch(`${baseUrl}/api/groq-proxy`, {
+    // const pass2Res = await fetch(`${baseUrl}/api/groq-proxy`, {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({ messages: pass2Messages })
+    // });
+
+    // const pass2Completion = await pass2Res.json();
+
+    const pass2Res = await fetch(`${baseUrl}/api/hf-proxy`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ messages: pass2Messages })
     });
-
+    
     const pass2Completion = await pass2Res.json();
 
     // --- EXTRACT MODEL OUTPUT ---
-    const agent = pass2Completion.parsed;
+    // const agent = pass2Completion.parsed;
+    const agent = JSON.parse(pass2Completion.raw);
+
+
 
     // --- SAFE FALLBACKS ---
     const actionItems = agent.action_items || [];
