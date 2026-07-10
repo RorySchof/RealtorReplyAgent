@@ -1,6 +1,4 @@
 export default async function handler(req, res) {
-  console.log("=== HF PROXY INVOKED (NODE RUNTIME) ===");
-
   try {
     let raw = "";
     for await (const chunk of req) raw += chunk;
@@ -21,7 +19,7 @@ export default async function handler(req, res) {
     };
 
     const response = await fetch(
-      "https://huggingface.co/api/inference/meta-llama/Llama-3.1-8B-Instruct",
+      "https://inference.huggingface.co/models/meta-llama/Meta-Llama-3.1-70B-Instruct",
       {
         method: "POST",
         headers: {
@@ -47,4 +45,5 @@ export default async function handler(req, res) {
     });
   }
 }
+
 
