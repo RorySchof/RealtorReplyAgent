@@ -866,92 +866,89 @@ mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}
     const mailtoHref = escapeHtmlAttr(mailtoLink);
 
     const emailHtml = `
-<link rel="stylesheet" href="/dist/styles.css">
-
-<div class="snapshot-card mb-6">
-  <div class="section-header">Client Snapshot</div>
-  <ul class="text-sm leading-relaxed">
-    <li><strong>Status:</strong> ${escapeHtml(clientSnapshot.client_status)}</li>
-    <li><strong>Primary Concern:</strong> ${escapeHtml(clientSnapshot.primary_concern)}</li>
-    <li><strong>Decision Factors:</strong> ${escapeHtml(clientSnapshot.decision_factors)}</li>
-    <li><strong>Momentum Signal:</strong> ${escapeHtml(clientSnapshot.momentum_signal)}</li>
-    <li><strong>Confidence:</strong> ${escapeHtml(clientSnapshot.confidence)}</li>
-  </ul>
-</div>
-
-<div class="actions-card mb-6">
-  <div class="section-header">Action Items</div>
-  <ul class="list-disc ml-5 text-sm leading-relaxed">
-    ${actionItems.map(i => `<li>${escapeHtml(i)}</li>`).join("")}
-  </ul>
-</div>
-
-<div class="coach-card mb-6">
-  <div class="section-header">Coach’s Insight</div>
-  <ul class="list-disc ml-5 text-sm leading-relaxed italic">
-    ${coachNotes.map(n => `<li>${escapeHtml(n)}</li>`).join("")}
-  </ul>
-</div>
-
-<div class="reply-card mb-6">
-  <div class="section-header">Draft Reply</div>
-  <pre class="whitespace-pre-wrap text-sm leading-relaxed">${escapeHtml(draftReply)}</pre>
-
-  <div class="mt-4 flex gap-3">
-    <a href="${mailtoHref}" class="px-4 py-2 bg-blue-600 text-white rounded-md font-semibold">
-      Send to Client
-    </a>
-
-    <button onclick="navigator.clipboard.writeText('${draftReplyEscapedForJs}')" 
-            class="px-4 py-2 bg-gray-600 text-white rounded-md font-semibold">
-      Copy Reply
-    </button>
-  </div>
-</div>
-
-<script>
-  function toggleSection(id) {
-    const el = document.getElementById(id);
-    el.classList.toggle('hidden');
-  }
-</script>
-
-<div class="collapsible-section">
-  <div class="collapsible-header" onclick="toggleSection('followups')">▼ Follow-Ups</div>
-  <div id="followups" class="collapsible-content hidden">
-    <ul class="list-disc ml-5 text-sm leading-relaxed">
-      ${followUps.map(f => `<li>${escapeHtml(f)}</li>`).join("")}
-    </ul>
-  </div>
-</div>
-
-<div class="collapsible-section">
-  <div class="collapsible-header" onclick="toggleSection('questionsFrom')">▼ Questions FROM Client</div>
-  <div id="questionsFrom" class="collapsible-content hidden">
-    <ul class="list-disc ml-5 text-sm leading-relaxed">
-      ${questionsFromClient.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
-    </ul>
-  </div>
-</div>
-
-<div class="collapsible-section">
-  <div class="collapsible-header" onclick="toggleSection('questionsFor')">▼ Questions FOR Client</div>
-  <div id="questionsFor" class="collapsible-content hidden">
-    <ul class="list-disc ml-5 text-sm leading-relaxed">
-      ${questionsForClient.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
-    </ul>
-  </div>
-</div>
-
-<div class="collapsible-section">
-  <div class="collapsible-header" onclick="toggleSection('rapport')">▼ Rapport Questions</div>
-  <div id="rapport" class="collapsible-content hidden">
-    <ul class="list-disc ml-5 text-sm leading-relaxed">
-      ${rapportQuestions.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
-    </ul>
-  </div>
-</div>
-`;
+    <div style="background:#f7f7f7; padding:24px; font-family:Arial, sans-serif;">
+    
+      <!-- Client Snapshot -->
+      <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+        <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#111827;">Client Snapshot</div>
+        <ul style="margin:0; padding-left:20px; line-height:1.5; font-size:14px; color:#374151;">
+          <li><strong>Status:</strong> ${escapeHtml(clientSnapshot.client_status)}</li>
+          <li><strong>Primary Concern:</strong> ${escapeHtml(clientSnapshot.primary_concern)}</li>
+          <li><strong>Decision Factors:</strong> ${escapeHtml(clientSnapshot.decision_factors)}</li>
+          <li><strong>Momentum Signal:</strong> ${escapeHtml(clientSnapshot.momentum_signal)}</li>
+          <li><strong>Confidence:</strong> ${escapeHtml(clientSnapshot.confidence)}</li>
+        </ul>
+      </div>
+    
+      <!-- Action Items -->
+      <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+        <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#111827;">Action Items</div>
+        <ul style="margin:0; padding-left:20px; line-height:1.5; font-size:14px; color:#374151;">
+          ${actionItems.map(i => `<li>${escapeHtml(i)}</li>`).join("")}
+        </ul>
+      </div>
+    
+      <!-- Coach’s Insight -->
+      <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+        <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#111827;">Coach’s Insight</div>
+        <ul style="margin:0; padding-left:20px; line-height:1.5; font-size:14px; color:#374151; font-style:italic;">
+          ${coachNotes.map(n => `<li>${escapeHtml(n)}</li>`).join("")}
+        </ul>
+      </div>
+    
+      <!-- Draft Reply -->
+      <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+        <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#111827;">Draft Reply</div>
+        <pre style="white-space:pre-wrap; font-size:14px; line-height:1.5; color:#374151; margin:0;">${escapeHtml(draftReply)}</pre>
+    
+        <div style="margin-top:16px; display:flex; gap:12px;">
+          <a href="${mailtoHref}" 
+             style="padding:10px 16px; background:#2563eb; color:#ffffff; text-decoration:none; border-radius:6px; font-weight:600; font-size:14px;">
+             Send to Client
+          </a>
+    
+          <a href="#" onclick="navigator.clipboard.writeText('${draftReplyEscapedForJs}')"
+             style="padding:10px 16px; background:#6b7280; color:#ffffff; text-decoration:none; border-radius:6px; font-weight:600; font-size:14px;">
+             Copy Reply
+          </a>
+        </div>
+      </div>
+    
+      <!-- Follow-Ups -->
+      <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+        <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#111827;">Follow-Ups</div>
+        <ul style="margin:0; padding-left:20px; line-height:1.5; font-size:14px; color:#374151;">
+          ${followUps.map(f => `<li>${escapeHtml(f)}</li>`).join("")}
+        </ul>
+      </div>
+    
+      <!-- Questions FROM Client -->
+      <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+        <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#111827;">Questions FROM Client</div>
+        <ul style="margin:0; padding-left:20px; line-height:1.5; font-size:14px; color:#374151;">
+          ${questionsFromClient.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
+        </ul>
+      </div>
+    
+      <!-- Questions FOR Client -->
+      <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+        <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#111827;">Questions FOR Client</div>
+        <ul style="margin:0; padding-left:20px; line-height:1.5; font-size:14px; color:#374151;">
+          ${questionsForClient.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
+        </ul>
+      </div>
+    
+      <!-- Rapport Questions -->
+      <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:16px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+        <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#111827;">Rapport Questions</div>
+        <ul style="margin:0; padding-left:20px; line-height:1.5; font-size:14px; color:#374151;">
+          ${rapportQuestions.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
+        </ul>
+      </div>
+    
+    </div>
+    `;
+    
  
 
     // --- SEND OUTBOUND EMAIL VIA MAILGUN ---
