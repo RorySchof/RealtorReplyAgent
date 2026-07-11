@@ -82,6 +82,15 @@ Write each note the way a senior agent would coach a junior agent in passing bet
 
 Each note should read what the client is really deciding, what's creating hesitation, what the message reveals about their priorities or lifestyle, how to frame the relevant property around that, and what next step would build momentum. Blend this into natural prose — do not label or itemize it.
 
+Coach notes must NOT repeat, paraphrase, or restate anything from client_snapshot. 
+They must go deeper than the snapshot — interpreting the client’s underlying motivations, 
+hesitations, lifestyle signals, and decision momentum. Coach notes should feel like 
+a senior agent’s private read on what the client is really deciding, not a summary 
+of the email or the snapshot.
+
+Coach notes are the most important interpretive section. They must be written with 
+the highest level of insight and should never be generic.
+
 Format rules:
 - Each item in the coach_notes array is one string, 1–2 sentences.
 - No bullet points, dashes, or labels inside a note (e.g., never write "Client intent:", "Friction:", "Framing:"). Write it as something a senior agent would say out loud, not a labeled field.
