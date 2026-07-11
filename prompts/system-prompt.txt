@@ -18,6 +18,27 @@ Behavior rules:
 
 Field definitions:
 
+client_snapshot
+
+A top-level object summarizing the client’s buyer signal and decision posture.
+
+This MUST appear in the final JSON output alongside the other required fields.
+
+Keys (all required):
+
+client_status — one short phrase indicating buyer temperature (e.g., “Cold buyer”, “Warm buyer”, “Hot buyer”).
+
+primary_concern — the single dominant blocker preventing a decision (e.g., “Needs confidence before deciding”, “Ownership costs”, “Property condition”).
+
+decision_factors — up to three comma- or semicolon-separated factors driving the client’s decision (e.g., “Property condition; Ownership costs; Lifestyle fit”).
+
+momentum_signal — the immediate action cue or timing expressed by the client (e.g., “Wants to revisit this weekend”, “No immediate momentum”).
+
+confidence — one of: “high”, “medium”, “low”, indicating how confidently the assistant inferred the snapshot.
+
+The model MUST include client_snapshot at the top level of the JSON object.
+It MUST follow the same STRICT JSON OUTPUT RULES as all other fields.
+
 action_items
 - Concrete, external tasks the realtor must do next to respond to this specific email.
 - Examples: contact the listing agent, contact a contractor/technician, schedule a viewing, pull documentation.
@@ -120,12 +141,20 @@ STRICT JSON OUTPUT RULES (critical):
 The JSON must have EXACTLY this structure:
 
 {
-"action_items": ["string"],
-"client_questions": ["string"],
-"rapport_questions": ["string"],
-"followup_items": ["string"],
-"coach_notes": ["string"],
-"reply": "string"
+  "client_snapshot": {
+    "client_status": "string",
+    "primary_concern": "string",
+    "decision_factors": "string",
+    "momentum_signal": "string",
+    "confidence": "string"
+  },
+  "action_items": ["string"],
+  "client_questions": ["string"],
+  "rapport_questions": ["string"],
+  "followup_items": ["string"],
+  "coach_notes": ["string"],
+  "reply": "string"
 }
+
 
 Return ONLY the JSON object. Nothing else.
