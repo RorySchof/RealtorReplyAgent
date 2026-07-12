@@ -70,7 +70,7 @@
 //       headers: { "Content-Type": "application/json" },
 //       body: JSON.stringify({ messages: pass2Messages })
 //     });
-    
+
 //     const pass2Completion = await pass2Res.json();
 
 //     // --- EXTRACT MODEL OUTPUT ---
@@ -371,7 +371,7 @@
 //       headers: { "Content-Type": "application/json" },
 //       body: JSON.stringify({ messages: pass2Messages })
 //     });
-    
+
 //     const pass2Completion = await pass2Res.json();
 
 //     // --- EXTRACT MODEL OUTPUT ---
@@ -789,7 +789,7 @@ export default async function handler(req, res) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ messages: pass2Messages })
     });
-    
+
     const pass2Completion = await pass2Res.json();
 
     // --- EXTRACT MODEL OUTPUT ---
@@ -878,29 +878,20 @@ mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}
       <!-- Snapshot Dashboard -->
       <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:20px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
         <div style="font-size:16px; font-weight:600; margin-bottom:16px; color:#111827;">Client Snapshot</div>
-    
         <table style="width:100%; border-collapse:collapse; font-size:14px; color:#374151;">
-          <tr>
-            <td style="padding:8px 0; font-weight:600; width:35%;">Status</td>
-            <td style="padding:8px 0;">${escapeHtml(clientSnapshot.client_status)}</td>
-          </tr>
-          <tr>
-            <td style="padding:8px 0; font-weight:600;">Primary Concern</td>
-            <td style="padding:8px 0;">${escapeHtml(clientSnapshot.primary_concern)}</td>
-          </tr>
-          <tr>
-            <td style="padding:8px 0; font-weight:600;">Momentum</td>
-            <td style="padding:8px 0;">${escapeHtml(clientSnapshot.momentum_signal)}</td>
-          </tr>
-          <tr>
-            <td style="padding:8px 0; font-weight:600;">Decision Factors</td>
-            <td style="padding:8px 0;">${escapeHtml(clientSnapshot.decision_factors)}</td>
-          </tr>
-          <tr>
-            <td style="padding:8px 0; font-weight:600;">Confidence</td>
-            <td style="padding:8px 0;">${escapeHtml(clientSnapshot.confidence)}</td>
-          </tr>
-        </table>
+        <tr>
+       <td style="padding:8px 0; font-weight:600; width:35%;">Client Status</td>
+        <td style="padding:8px 0;">${escapeHtml(clientSnapshot.client_status)}</td>
+        </tr>
+      <tr>
+      <td style="padding:8px 0; font-weight:600;">Decision Factors</td>
+      <td style="padding:8px 0;">${escapeHtml(clientSnapshot.decision_factors)}</td>
+      </tr>
+      <tr>
+    <td style="padding:8px 0; font-weight:600;">Momentum Signal</td>
+    <td style="padding:8px 0;">${escapeHtml(clientSnapshot.momentum_signal)}</td>
+    </tr>
+      </table>
       </div>
     
       <!-- Action Items (Primary Card) -->
@@ -949,9 +940,9 @@ mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}
     
     </div>
     `;
-    
-    
- 
+
+
+
 
     // --- SEND OUTBOUND EMAIL VIA MAILGUN ---
     const mailgunResponse = await fetch(
