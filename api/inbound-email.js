@@ -868,111 +868,112 @@ mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}
     // --- HTML EMAIL BODY ---
 
     const emailHtml = `
-<div style="background:#f7f7f7; padding:24px; font-family:Arial, sans-serif;">
-
-  <!-- Header -->
-  <div style="text-align:left; font-size:18px; font-weight:600; color:#111827; margin-bottom:24px;">
-    Realtor Assistant — Client Summary
-  </div>
-
-  <!-- Snapshot Dashboard -->
-  <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:20px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
-    <div style="font-size:16px; font-weight:600; margin-bottom:16px; color:#111827;">Client Snapshot</div>
-
-    <table style="width:100%; border-collapse:collapse; font-size:14px; color:#374151;">
-      <tr>
-        <td style="padding:8px 0; font-weight:600; width:35%;">Status</td>
-        <td style="padding:8px 0;">${escapeHtml(clientSnapshot.client_status)}</td>
-      </tr>
-      <tr>
-        <td style="padding:8px 0; font-weight:600;">Primary Concern</td>
-        <td style="padding:8px 0;">${escapeHtml(clientSnapshot.primary_concern)}</td>
-      </tr>
-      <tr>
-        <td style="padding:8px 0; font-weight:600;">Momentum</td>
-        <td style="padding:8px 0;">${escapeHtml(clientSnapshot.momentum_signal)}</td>
-      </tr>
-      <tr>
-        <td style="padding:8px 0; font-weight:600;">Decision Factors</td>
-        <td style="padding:8px 0;">${escapeHtml(clientSnapshot.decision_factors)}</td>
-      </tr>
-      <tr>
-        <td style="padding:8px 0; font-weight:600;">Confidence</td>
-        <td style="padding:8px 0;">${escapeHtml(clientSnapshot.confidence)}</td>
-      </tr>
-    </table>
-  </div>
-
-  <!-- Action Items (Primary Card) -->
-  <div style="background:#f8fbff; border:1px solid #dbeafe; border-left:4px solid #2563eb; border-radius:8px; padding:20px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
-    <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#1e3a8a;">Action Items</div>
-    <ul style="margin:0; padding-left:20px; line-height:1.6; font-size:14px; color:#374151;">
-      ${actionItems.map(i => `<li>${escapeHtml(i)}</li>`).join("")}
-    </ul>
-  </div>
-
-  <!-- Draft Reply (Deliverable Card) -->
-  <div style="background:#fcfcfc; border:1px solid #e5e7eb; border-radius:8px; padding:24px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
-    <div style="font-size:16px; font-weight:600; margin-bottom:16px; color:#111827;">Draft Reply</div>
-
-    <pre style="white-space:pre-wrap; font-size:14px; line-height:1.6; color:#374151; margin:0;">${escapeHtml(draftReply)}</pre>
-
-    <!-- Stacked Buttons -->
-    <div style="margin-top:20px;">
-      <a href="${mailtoHref}"
-         style="display:block; width:100%; text-align:center; padding:12px 16px; background:#2563eb; color:#ffffff; text-decoration:none; border-radius:6px; font-weight:600; font-size:14px; margin-bottom:12px;">
-         Send to Client
-      </a>
-
-      <a href="#" onclick="navigator.clipboard.writeText('${draftReplyEscapedForJs}')"
-         style="display:block; width:100%; text-align:center; padding:12px 16px; background:#6b7280; color:#ffffff; text-decoration:none; border-radius:6px; font-weight:600; font-size:14px;">
-         Copy Reply
-      </a>
+    <div style="background:#f7f7f7; padding:24px; font-family:Arial, sans-serif;">
+    
+      <!-- Header -->
+      <div style="text-align:left; font-size:18px; font-weight:600; color:#111827; margin-bottom:24px;">
+        Realtor Assistant — Client Summary
+      </div>
+    
+      <!-- Snapshot Dashboard -->
+      <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:20px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+        <div style="font-size:16px; font-weight:600; margin-bottom:16px; color:#111827;">Client Snapshot</div>
+    
+        <table style="width:100%; border-collapse:collapse; font-size:14px; color:#374151;">
+          <tr>
+            <td style="padding:8px 0; font-weight:600; width:35%;">Status</td>
+            <td style="padding:8px 0;">${escapeHtml(clientSnapshot.client_status)}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 0; font-weight:600;">Primary Concern</td>
+            <td style="padding:8px 0;">${escapeHtml(clientSnapshot.primary_concern)}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 0; font-weight:600;">Momentum</td>
+            <td style="padding:8px 0;">${escapeHtml(clientSnapshot.momentum_signal)}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 0; font-weight:600;">Decision Factors</td>
+            <td style="padding:8px 0;">${escapeHtml(clientSnapshot.decision_factors)}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 0; font-weight:600;">Confidence</td>
+            <td style="padding:8px 0;">${escapeHtml(clientSnapshot.confidence)}</td>
+          </tr>
+        </table>
+      </div>
+    
+      <!-- Action Items (Primary Card) -->
+      <div style="background:#f8fbff; border:1px solid #dbeafe; border-left:4px solid #2563eb; border-radius:8px; padding:20px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+        <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#1e3a8a;">Action Items</div>
+        <ul style="margin:0; padding-left:20px; line-height:1.6; font-size:14px; color:#374151;">
+          ${actionItems.map(i => `<li>${escapeHtml(i)}</li>`).join("")}
+        </ul>
+      </div>
+    
+      <!-- Coach Insight (Personality Card) -->
+      <div style="background:#f5faff; border:1px solid #dbeafe; border-radius:8px; padding:20px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+        <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#1e3a8a;">Coach’s Insight</div>
+        <ul style="margin:0; padding-left:20px; line-height:1.6; font-size:14px; color:#374151;">
+          ${coachNotes.map(n => `<li>${escapeHtml(n)}</li>`).join("")}
+        </ul>
+      </div>
+    
+      <!-- Draft Reply (Deliverable Card) -->
+      <div style="background:#fcfcfc; border:1px solid #e5e7eb; border-radius:8px; padding:24px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+        <div style="font-size:16px; font-weight:600; margin-bottom:16px; color:#111827;">Draft Reply</div>
+    
+        <pre style="white-space:pre-wrap; font-size:14px; line-height:1.6; color:#374151; margin:0;">${escapeHtml(draftReply)}</pre>
+    
+        <!-- Stacked Buttons -->
+        <div style="margin-top:20px;">
+          <a href="${mailtoHref}"
+             style="display:block; width:100%; text-align:center; padding:12px 16px; background:#2563eb; color:#ffffff; text-decoration:none; border-radius:6px; font-weight:600; font-size:14px; margin-bottom:12px;">
+             Send to Client
+          </a>
+    
+          <a href="#" onclick="navigator.clipboard.writeText('${draftReplyEscapedForJs}')"
+             style="display:block; width:100%; text-align:center; padding:12px 16px; background:#6b7280; color:#ffffff; text-decoration:none; border-radius:6px; font-weight:600; font-size:14px;">
+             Copy Reply
+          </a>
+        </div>
+      </div>
+    
+      <!-- Follow-Ups -->
+      <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:20px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+        <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#111827;">Follow-Ups</div>
+        <ul style="margin:0; padding-left:20px; line-height:1.6; font-size:14px; color:#374151;">
+          ${followUps.map(f => `<li>${escapeHtml(f)}</li>`).join("")}
+        </ul>
+      </div>
+    
+      <!-- Questions FROM Client -->
+      <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:20px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+        <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#111827;">Questions FROM Client</div>
+        <ul style="margin:0; padding-left:20px; line-height:1.6; font-size:14px; color:#374151;">
+          ${questionsFromClient.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
+        </ul>
+      </div>
+    
+      <!-- Questions FOR Client -->
+      <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:20px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+        <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#111827;">Questions FOR Client</div>
+        <ul style="margin:0; padding-left:20px; line-height:1.6; font-size:14px; color:#374151;">
+          ${questionsForClient.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
+        </ul>
+      </div>
+    
+      <!-- Rapport Questions -->
+      <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:20px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
+        <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#111827;">Rapport Questions</div>
+        <ul style="margin:0; padding-left:20px; line-height:1.6; font-size:14px; color:#374151;">
+          ${rapportQuestions.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
+        </ul>
+      </div>
+    
     </div>
-  </div>
-
-  <!-- Coach Insight (Personality Card) -->
-  <div style="background:#f5faff; border:1px solid #dbeafe; border-radius:8px; padding:20px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
-    <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#1e3a8a;">Coach’s Insight</div>
-    <ul style="margin:0; padding-left:20px; line-height:1.6; font-size:14px; color:#374151;">
-      ${coachNotes.map(n => `<li>${escapeHtml(n)}</li>`).join("")}
-    </ul>
-  </div>
-
-  <!-- Follow-Ups -->
-  <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:20px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
-    <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#111827;">Follow-Ups</div>
-    <ul style="margin:0; padding-left:20px; line-height:1.6; font-size:14px; color:#374151;">
-      ${followUps.map(f => `<li>${escapeHtml(f)}</li>`).join("")}
-    </ul>
-  </div>
-
-  <!-- Questions FROM Client -->
-  <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:20px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
-    <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#111827;">Questions FROM Client</div>
-    <ul style="margin:0; padding-left:20px; line-height:1.6; font-size:14px; color:#374151;">
-      ${questionsFromClient.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
-    </ul>
-  </div>
-
-  <!-- Questions FOR Client -->
-  <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:20px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
-    <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#111827;">Questions FOR Client</div>
-    <ul style="margin:0; padding-left:20px; line-height:1.6; font-size:14px; color:#374151;">
-      ${questionsForClient.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
-    </ul>
-  </div>
-
-  <!-- Rapport Questions -->
-  <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:20px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
-    <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#111827;">Rapport Questions</div>
-    <ul style="margin:0; padding-left:20px; line-height:1.6; font-size:14px; color:#374151;">
-      ${rapportQuestions.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
-    </ul>
-  </div>
-
-</div>
-`;
+    `;
+    
 
 
     
