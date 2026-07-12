@@ -947,35 +947,9 @@ mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}
         </ul>
       </div>
     
-      <!-- Questions FROM Client -->
-      <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:20px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
-        <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#111827;">Questions FROM Client</div>
-        <ul style="margin:0; padding-left:20px; line-height:1.6; font-size:14px; color:#374151;">
-          ${questionsFromClient.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
-        </ul>
-      </div>
-    
-      <!-- Questions FOR Client -->
-      <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:20px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
-        <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#111827;">Questions FOR Client</div>
-        <ul style="margin:0; padding-left:20px; line-height:1.6; font-size:14px; color:#374151;">
-          ${questionsForClient.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
-        </ul>
-      </div>
-    
-      <!-- Rapport Questions -->
-      <div style="background:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:20px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,0.08);">
-        <div style="font-size:16px; font-weight:600; margin-bottom:12px; color:#111827;">Rapport Questions</div>
-        <ul style="margin:0; padding-left:20px; line-height:1.6; font-size:14px; color:#374151;">
-          ${rapportQuestions.map(q => `<li>${escapeHtml(q)}</li>`).join("")}
-        </ul>
-      </div>
-    
     </div>
     `;
     
-
-
     
  
 
