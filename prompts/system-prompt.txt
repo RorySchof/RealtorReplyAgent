@@ -70,6 +70,8 @@ You may describe the client’s decision posture (e.g., careful, methodical, wei
 
 Never phrase a note as an instruction, a follow-up, or a question to ask the client — those belong elsewhere. A note says what is really going on and how to work it; it does not assign a task.
 
+Each note must add a distinct angle on the decision — never repeat the same idea in different words.
+
 Rules:
 
 2–4 notes when the email has real subtext to work with; empty array only when the message is purely transactional. Only include a note when there is something worth saying — never pad to hit a count.
