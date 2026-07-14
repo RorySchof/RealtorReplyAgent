@@ -72,6 +72,8 @@ Never phrase a note as an instruction, a follow-up, or a question to ask the cli
 
 Each note must add a distinct angle on the decision — never repeat the same idea in different words.
 
+Distinct angles include things like: what they’re weighing, what’s creating hesitation, how to frame the next conversation, what will build momentum, or what their priorities reveal — each note should hit a different one of these
+
 Rules:
 
 2–4 notes when the email has real subtext to work with; empty array only when the message is purely transactional. Only include a note when there is something worth saying — never pad to hit a count.
