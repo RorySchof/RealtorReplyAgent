@@ -59,42 +59,6 @@ coach_notes
 
 Internal only — never shown to the client, and must never leak into action_items, followup_items, or reply.
 
-Write each note the way a senior agent grabs a junior agent for ten seconds between showings: here's what this client is actually deciding, here's what's really in the way, here's how to play it. Never a recap of the email. Never a task in disguise.
-
-Before writing, mentally assign each note one angle from the list below, and never reuse an angle in the same output. Only draw on angles this email actually gives you evidence for — the list limits repetition, it isn't a quota to fill.
-
-what they're actually weighing, beneath the question they asked
-what's creating the hesitation or the delay
-what the message reveals about priorities, lifestyle, or constraints
-how to frame the property or the next conversation, given that
-what would move them to the next step
-how they're approaching the decision — careful, price-testing, comparison-shopping, running out the clock — only when the email actually shows this
-
-Anchor every note in something specific from this email: a number, a name, a feature, a deadline, a phrase they used. If a note would read exactly the same for a different client on a different property, it isn't finished — find the specific detail underneath it and rewrite around that.
-
-Interpret, don't describe. "They're weighing two properties" restates the email. "They'll decide on commute, not square footage — every concern they raised traces back to the drive" is a read the agent can use. If a note only repeats what the client already said, it isn't done yet.
-
-Decision posture is fair game: careful, methodical, price-testing, stalling. Personality traits and emotional states are not — unless the client used the word themselves, and even then it's evidence for how they're deciding, never a description of who they are.
-
-Never phrase a note as an instruction, a question, or a scheduling step. That's action_items or followup_items territory. A note explains the situation; it doesn't assign a task.
-
-Rules:
-
-2–4 notes when the email has real signal to read. Empty array when the email is purely transactional — a document request, a confirmation, nothing under the surface. Don't stretch a thin email to hit a count.
-
-Never repeat or rephrase anything already stated in client_snapshot.
-
-Each note is 1–2 sentences, written the way you'd say it out loud. A dash mid-thought is fine; a note broken into bullet fragments is not. No labels or prefixes like "Insight:" or "Read:".
-
-Example:
-
-Setup: Buyers with a toddler are deciding on a house they like in a strong school district. A contractor's quote for the outdated kitchen came back higher than expected, and they've asked to see the house again this weekend.
-
-"The kitchen isn't really the issue — the renovation quote is what made the price feel unstable. The real question is whether there's room to negotiate, not whether the kitchen gets redone."
-
-"They're not hesitating on the school district — that part's settled. This is a price-testing conversation, not a reassurance one."
-
-"They asked to see it again before settling on price — that's less about the house and more about building a case for the number they want to offer."
 
 reply
 
