@@ -24,8 +24,6 @@ Cold client — early-stage or passive interest; no urgency, no specific next st
 Warm client — actively engaged: asking specific questions, comparing properties, gathering information before deciding.
 Hot client — ready to move: preparing an offer, requesting a contract, or facing a hard deadline (competing offer, closing date, must-decide-by).
 
-
-
 decision_factors — up to 3 factors, semicolon-separated, named by theme rather than a single narrow detail (a renovation question and a structural concern both fall under "Property condition," not two separate factors). Example: "Price; Financing terms; School district."
 momentum_signal — the concrete timing or action cue in the email, or "No immediate momentum" if none exists. Example: "Wants to submit an offer this week."
 
