@@ -90,7 +90,8 @@ export default async function handler(req) {
     try {
       // Extract ONLY from the model's content, not the raw Groq envelope
       console.error("[DIAG] groq-proxy — JSON extraction match target: content.match");
-      const jsonMatch = content.match(/\{[\s\S]*?\}/);
+      // const jsonMatch = content.match(/\{[\s\S]*?\}/);
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
       console.error("[DIAG] groq-proxy — jsonMatch found:", !!jsonMatch);
       console.error("[DIAG] groq-proxy — jsonMatch[0] length:", jsonMatch?.[0]?.length ?? null);
 
