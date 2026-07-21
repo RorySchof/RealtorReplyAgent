@@ -47,7 +47,7 @@ export default async function handler(req) {
 
     // --- CREATE PROMISE (DO NOT AWAIT YET) ---
     const promise = groq.chat.completions.create({
-      model: "llama-3.1-70b-versatile",
+      model: "llama-3.1-70b-instruct",
       messages: normalizedMessages,
       temperature: 0.2,
     });
