@@ -784,7 +784,7 @@ export default async function handler(req, res) {
     ];
     logMessagesDiagnostics("PASS 2 — inbound-email outbound to groq-proxy", pass2Messages);
 
-    const pass2Res = await fetch(`${baseUrl}/api/hf-proxy`, {
+    const pass2Res = await fetch(`${baseUrl}/api/groq-proxy`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ messages: pass2Messages })
