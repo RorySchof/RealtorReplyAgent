@@ -47,7 +47,7 @@ export default async function handler(req) {
 
     // --- CREATE PROMISE (DO NOT AWAIT YET) ---
     const promise = groq.chat.completions.create({
-      model: "openai/gpt-oss-20b",
+      model: "llama-3.3-70b-versatile",
       messages: normalizedMessages,
       temperature: 0.2,
     });
