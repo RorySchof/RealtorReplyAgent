@@ -941,9 +941,6 @@ mailto:${clientEmail}?subject=${encodeURIComponent("Re: " + data.subject)}
     </div>
     `;
 
-
-
-
     // --- SEND OUTBOUND EMAIL VIA MAILGUN ---
     const mailgunResponse = await fetch(
       `https://api.mailgun.net/v3/${process.env.MAILGUN_DOMAIN}/messages`,
