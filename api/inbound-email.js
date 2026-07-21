@@ -793,7 +793,9 @@ export default async function handler(req, res) {
     const pass2Completion = await pass2Res.json();
 
     // --- EXTRACT MODEL OUTPUT ---
-    const agent = JSON.parse(pass2Completion.raw);
+    // const agent = JSON.parse(pass2Completion.raw);
+
+    const agent = pass2Completion.parsed;
 
     // --- SAFE FALLBACKS ---
     const actionItems = agent.action_items || [];
