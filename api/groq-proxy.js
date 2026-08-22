@@ -67,6 +67,8 @@ console.error("MODEL USED:", "openai/gpt-oss-120b");
     let rawJson;
     try {
       rawJson = JSON.parse(rawText);
+      console.error("GROQ REPORTED MODEL:", rawJson?.model);
+
     } catch (e) {
       console.error("GROQ RAW JSON PARSE ERROR:", e.message);
       console.error("GROQ RAW TEXT START:", rawText.slice(0, 80));
