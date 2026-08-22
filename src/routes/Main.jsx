@@ -1,5 +1,6 @@
+// src/routes/Main.jsx
+
 import { useEffect, useState, useRef } from 'react';
-import { processMessage } from '../agent';
 import OutputSection from '../components/OutputSection';
 
 const STORAGE_KEY = 'realtor-reply-agent-last-output';
@@ -48,7 +49,8 @@ export default function Main() {
     setError(null);
 
     try {
-      const result = await processMessage(inputText);
+      // const result = await processMessage(inputText);
+      const result = emptyOutput;
       setOutput(result);
       setReplyText(result.reply);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(result));

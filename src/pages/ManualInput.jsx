@@ -1,0 +1,146 @@
+// src/pages/ManualInput.jsx
+
+import { useState } from 'react';
+
+export default function ManualInput() {
+  console.log("ManualInput rendered");
+  const [text, setText] = useState('');
+  const [reply, setReply] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  async function handleGenerate() {
+    if (!text.trim()) return;
+
+    setLoading(true);
+    setError(null);
+    setReply('');
+
+    try {
+      const response = await fetch('/api/reply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Request failed');
+      }
+
+      const data = await response.json();
+      setReply(data.reply || '');
+    } catch {
+      setError('Something went wrong generating the reply. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div style={styles.container}>
+      <h1 style={styles.heading}>Manual Input</h1>
+
+      <section style={styles.section}>
+        <h2 style={styles.sectionTitle}>Paste Email</h2>
+        <textarea
+          style={styles.textarea}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          rows={12}
+          placeholder="Paste the email here..."
+          disabled={loading}
+        />
+      </section>
+
+      <div style={styles.buttons}>
+        <button
+          type="button"
+          style={styles.button}
+          onClick={handleGenerate}
+          disabled={loading || !text.trim()}
+        >
+          Generate Reply
+        </button>
+      </div>
+
+      {loading && <p style={styles.status}>Generating reply...</p>}
+
+      {error && <p style={styles.error}>{error}</p>}
+
+      {reply && !loading && (
+        <section style={styles.section}>
+          <h2 style={styles.sectionTitle}>Generated Reply</h2>
+          <div style={styles.resultBox}>{reply}</div>
+        </section>
+      )}
+    </div>
+  );
+}
+
+const styles = {
+  container: {
+    maxWidth: '640px',
+    margin: '0 auto',
+    padding: '1.5rem',
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+    color: '#222',
+    lineHeight: 1.5,
+  },
+  heading: {
+    fontSize: '1.5rem',
+    fontWeight: 600,
+    marginBottom: '1.5rem',
+  },
+  section: {
+    marginBottom: '1.5rem',
+  },
+  sectionTitle: {
+    fontSize: '1.1rem',
+    fontWeight: 600,
+    marginBottom: '0.5rem',
+  },
+  textarea: {
+    width: '100%',
+    padding: '0.75rem',
+    fontSize: '1rem',
+    fontFamily: 'inherit',
+    lineHeight: 1.5,
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+    resize: 'vertical',
+    boxSizing: 'border-box',
+  },
+  buttons: {
+    display: 'flex',
+    gap: '0.75rem',
+    flexWrap: 'wrap',
+    marginBottom: '1.5rem',
+  },
+  button: {
+    padding: '0.6rem 1.2rem',
+    fontSize: '1rem',
+    cursor: 'pointer',
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+    background: '#fff',
+  },
+  resultBox: {
+    padding: '0.75rem',
+    fontSize: '1rem',
+    lineHeight: 1.5,
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+    background: '#fafafa',
+    whiteSpace: 'pre-wrap',
+  },
+  status: {
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+    color: '#666',
+    marginBottom: '1rem',
+  },
+  error: {
+    fontFamily: 'system-ui, -apple-system, sans-serif',
+    color: '#b00020',
+    marginBottom: '1rem',
+  },
+};
