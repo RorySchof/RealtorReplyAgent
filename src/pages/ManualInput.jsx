@@ -1,11 +1,16 @@
 // src/pages/ManualInput.jsx
 
 import { useState } from 'react';
+import OutputSection from '../components/OutputSection';
+
+function asList(value) {
+  return Array.isArray(value) ? value : [];
+}
 
 export default function ManualInput() {
   console.log("ManualInput rendered");
   const [text, setText] = useState('');
-  const [reply, setReply] = useState('');
+  const [agent, setAgent] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -14,7 +19,7 @@ export default function ManualInput() {
 
     setLoading(true);
     setError(null);
-    setReply('');
+    setAgent(null);
 
     try {
       const response = await fetch('/api/reply', {
@@ -28,13 +33,26 @@ export default function ManualInput() {
       }
 
       const data = await response.json();
-      setReply(data.reply || '');
+      setAgent(data || {});
     } catch {
       setError('Something went wrong generating the reply. Please try again.');
     } finally {
       setLoading(false);
     }
   }
+
+  const snapshot = agent?.client_snapshot || {};
+  const actionItems = asList(agent?.action_items);
+  const followUps = asList(agent?.followups?.length ? agent.followups : agent?.followup_items);
+  const coachNotes = asList(agent?.coach_notes);
+  const clientQuestions = asList(agent?.client_questions);
+  const rapportQuestions = asList(agent?.rapport_questions);
+  const questionsForClient = asList(
+    agent?.questions_for_client?.length ? agent.questions_for_client : agent?.client_questions
+  );
+  const draftReply = agent?.draft_reply || agent?.reply || '';
+
+  const hasAgent = agent && !loading;
 
   return (
     <div style={styles.container}>
@@ -67,11 +85,35 @@ export default function ManualInput() {
 
       {error && <p style={styles.error}>{error}</p>}
 
-      {reply && !loading && (
-        <section style={styles.section}>
-          <h2 style={styles.sectionTitle}>Generated Reply</h2>
-          <div style={styles.resultBox}>{reply}</div>
-        </section>
+      {hasAgent && (
+        <>
+          <section style={styles.section}>
+            <h2 style={styles.sectionTitle}>Client Snapshot</h2>
+            <div style={styles.resultBox}>
+              <div>Client Status: {snapshot.client_status || '—'}</div>
+              {snapshot.primary_concern != null && snapshot.primary_concern !== '' && (
+                <div>Primary Concern: {snapshot.primary_concern}</div>
+              )}
+              <div>Decision Factors: {snapshot.decision_factors || '—'}</div>
+              <div>Momentum Signal: {snapshot.momentum_signal || '—'}</div>
+              {snapshot.confidence != null && snapshot.confidence !== '' && (
+                <div>Confidence: {snapshot.confidence}</div>
+              )}
+            </div>
+          </section>
+
+          <OutputSection title="Action Items" items={actionItems} />
+          <OutputSection title="Follow-Ups" items={followUps} />
+          <OutputSection title="Coach's Notes" items={coachNotes} />
+          <OutputSection title="Questions FROM Client" items={clientQuestions} />
+          <OutputSection title="Rapport Questions" items={rapportQuestions} />
+          <OutputSection title="Questions FOR Client" items={questionsForClient} />
+
+          <section style={styles.section}>
+            <h2 style={styles.sectionTitle}>Draft Reply</h2>
+            <div style={styles.resultBox}>{draftReply || '—'}</div>
+          </section>
+        </>
       )}
     </div>
   );

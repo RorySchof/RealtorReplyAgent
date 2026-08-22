@@ -38,9 +38,7 @@ export async function generateReply(text) {
   }
 
   const pass2Completion = await pass2Res.json();
-  const agent = pass2Completion.parsed || {};
-
-  return agent.draft_reply || agent.reply || "";
+  return pass2Completion.parsed || {};
 }
 
 function extractForwardedMessage(body) {

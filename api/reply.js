@@ -15,9 +15,9 @@ export default async function handler(req, res) {
     }
 
     // IDENTICAL LOGIC to Mailgun inbound (via shared generateReply)
-    const reply = await generateReply(text);
+    const agent = await generateReply(text);
 
-    return res.status(200).json({ reply });
+    return res.status(200).json(agent);
   } catch (err) {
     console.error("Reply generation error:", err);
     return res.status(500).json({ error: "Failed to generate reply" });
