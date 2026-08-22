@@ -52,6 +52,9 @@ export default async function handler(req) {
       temperature: 0.2,
     });
 
+    // ADD THIS LINE RIGHT HERE
+console.error("MODEL USED:", "openai/gpt-oss-120b");
+
     // --- RAW HTTP RESPONSE BEFORE SDK PARSES IT ---
     const rawResponse = await promise.asResponse();
     const rawText = await rawResponse.clone().text();
