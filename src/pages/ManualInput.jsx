@@ -3,13 +3,14 @@
 import { useState } from 'react';
 import ManualInputEmailPreview from '../components/ManualInputEmailPreview';
 
-// Design tokens mirrored from Showing Notes (ShowingNotesForm / theme.js)
+// Design tokens mirrored from Showing Notes (theme.js / pageStyles.js)
 const colors = {
   ink: '#1A2331',
   slate: '#4B5768',
   slateLight: '#8592A3',
   navy: '#1B3A4B',
   navyDark: '#132A37',
+  paleAccent: '#E7EEF0',
   hairline: '#DCE3E8',
   bgMuted: '#F7F9FA',
   bg: '#FFFFFF',
@@ -70,6 +71,11 @@ export default function ManualInput() {
 
   return (
     <div style={styles.page}>
+      <header style={styles.header}>
+        <h1 style={styles.title}>Realtor Reply</h1>
+        <p style={styles.subtitle}>Draft professional replies to client messages</p>
+      </header>
+
       <div style={styles.card}>
         <div style={styles.cardHeader}>Manual Input</div>
         <div style={styles.form}>
@@ -113,15 +119,32 @@ export default function ManualInput() {
 
 const styles = {
   page: {
-    maxWidth: '640px',
+    maxWidth: '960px',
     margin: '0 auto',
     padding: '2rem 1.5rem',
     fontFamily: type.fontFamily,
     color: colors.ink,
     lineHeight: 1.5,
-    background: colors.bgMuted,
+    background: colors.bg,
     minHeight: '100vh',
     boxSizing: 'border-box',
+  },
+  header: {
+    marginBottom: '1.75rem',
+    paddingBottom: '1.25rem',
+    borderBottom: `1px solid ${colors.hairline}`,
+  },
+  title: {
+    fontSize: '1.6rem',
+    fontWeight: 650,
+    margin: 0,
+    color: colors.navy,
+    letterSpacing: '-0.01em',
+  },
+  subtitle: {
+    margin: '0.35rem 0 0',
+    color: colors.slate,
+    fontSize: '0.95rem',
   },
   card: {
     marginBottom: '2rem',

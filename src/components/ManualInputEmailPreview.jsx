@@ -1,5 +1,32 @@
 // src/components/ManualInputEmailPreview.jsx
 
+// Design tokens mirrored from Showing Notes (theme.js)
+const colors = {
+  ink: '#1A2331',
+  slate: '#4B5768',
+  slateLight: '#8592A3',
+  navy: '#1B3A4B',
+  navyDark: '#132A37',
+  paleAccent: '#E7EEF0',
+  hairline: '#DCE3E8',
+  bgMuted: '#F7F9FA',
+  bg: '#FFFFFF',
+};
+
+const type = {
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif',
+};
+
+const sectionHeaderBar = {
+  background: colors.navy,
+  color: '#FFFFFF',
+  padding: '0.65rem 1.25rem',
+  fontSize: '0.95rem',
+  fontWeight: 600,
+  letterSpacing: '0.01em',
+};
+
 function asList(value) {
   return Array.isArray(value) ? value : [];
 }
@@ -17,8 +44,7 @@ function ListItems({ items }) {
 }
 
 /**
- * Visual copy of the inbound-email HTML summary (cards, table, colors, shadows).
- * Does not share code with inbound-email.js — styles were mirrored from that template.
+ * Structured agent output using Showing Notes card / header patterns.
  */
 export default function ManualInputEmailPreview({ agent }) {
   const snapshot = agent?.client_snapshot || {};
@@ -40,216 +66,181 @@ export default function ManualInputEmailPreview({ agent }) {
   }
 
   return (
-    <div style={styles.page}>
-      <div style={styles.header}>Realtor Assistant — Client Summary</div>
+    <div style={styles.card}>
+      <div style={styles.cardHeader}>Client Summary</div>
+      <div style={styles.body}>
+        <section style={styles.section}>
+          <h3 style={styles.sectionTitle}>Client Snapshot</h3>
+          <table style={styles.snapshotTable}>
+            <tbody>
+              <tr>
+                <td style={styles.snapshotLabel}>Client Status</td>
+                <td style={styles.snapshotValue}>{snapshot.client_status || '—'}</td>
+              </tr>
+              <tr>
+                <td style={styles.snapshotLabel}>Decision Factors</td>
+                <td style={styles.snapshotValue}>{snapshot.decision_factors || '—'}</td>
+              </tr>
+              <tr>
+                <td style={styles.snapshotLabel}>Momentum Signal</td>
+                <td style={styles.snapshotValue}>{snapshot.momentum_signal || '—'}</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
 
-      <div style={styles.snapshotCard}>
-        <div style={styles.snapshotTitle}>Client Snapshot</div>
-        <table style={styles.snapshotTable}>
-          <tbody>
-            <tr>
-              <td style={styles.snapshotLabelWide}>Client Status</td>
-              <td style={styles.snapshotValue}>{snapshot.client_status || '—'}</td>
-            </tr>
-            <tr>
-              <td style={styles.snapshotLabel}>Decision Factors</td>
-              <td style={styles.snapshotValue}>{snapshot.decision_factors || '—'}</td>
-            </tr>
-            <tr>
-              <td style={styles.snapshotLabel}>Momentum Signal</td>
-              <td style={styles.snapshotValue}>{snapshot.momentum_signal || '—'}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+        <section style={styles.callout}>
+          <div style={styles.calloutHeader}>Action Items</div>
+          <div style={styles.calloutBody}>
+            <ul style={styles.list}>
+              <ListItems items={actionItems} />
+            </ul>
+          </div>
+        </section>
 
-      <div style={styles.actionCard}>
-        <div style={styles.actionTitle}>Action Items</div>
-        <ul style={styles.list}>
-          <ListItems items={actionItems} />
-        </ul>
-      </div>
+        <section style={styles.callout}>
+          <div style={styles.calloutHeader}>Coach’s Insight</div>
+          <div style={styles.calloutBody}>
+            <ul style={styles.list}>
+              <ListItems items={coachNotes} />
+            </ul>
+          </div>
+        </section>
 
-      <div style={styles.coachCard}>
-        <div style={styles.coachTitle}>Coach’s Insight</div>
-        <ul style={styles.list}>
-          <ListItems items={coachNotes} />
-        </ul>
-      </div>
+        <section style={styles.section}>
+          <h3 style={styles.sectionTitle}>Draft Reply</h3>
+          <pre style={styles.draftBody}>{draftReply || '—'}</pre>
+          <div style={styles.buttonStack}>
+            <a href="mailto:" style={styles.sendButton}>
+              Send to Client
+            </a>
+            <button type="button" onClick={handleCopyReply} style={styles.copyButton}>
+              Copy Reply
+            </button>
+          </div>
+        </section>
 
-      <div style={styles.draftCard}>
-        <div style={styles.draftTitle}>Draft Reply</div>
-        <pre style={styles.draftBody}>{draftReply || '—'}</pre>
-        <div style={styles.buttonStack}>
-          <a href="mailto:" style={styles.sendButton}>
-            Send to Client
-          </a>
-          <a href="#" onClick={handleCopyReply} style={styles.copyButton}>
-            Copy Reply
-          </a>
-        </div>
-      </div>
-
-      <div style={styles.followUpCard}>
-        <div style={styles.followUpTitle}>Follow-Ups</div>
-        <ul style={styles.list}>
-          <ListItems items={followUps} />
-        </ul>
+        <section style={styles.section}>
+          <h3 style={styles.sectionTitle}>Follow-Ups</h3>
+          <ul style={styles.list}>
+            <ListItems items={followUps} />
+          </ul>
+        </section>
       </div>
     </div>
   );
 }
 
 const styles = {
-  page: {
-    background: '#f7f7f7',
-    padding: '24px',
-    fontFamily: 'Arial, sans-serif',
-  },
-  header: {
-    textAlign: 'left',
-    fontSize: '18px',
-    fontWeight: 600,
-    color: '#111827',
-    marginBottom: '24px',
-  },
-  snapshotCard: {
-    background: '#f9fafb',
-    border: '1px solid #e5e7eb',
+  card: {
+    marginBottom: '2rem',
+    border: `1px solid ${colors.hairline}`,
     borderRadius: '8px',
-    padding: '20px',
-    marginBottom: '24px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+    overflow: 'hidden',
+    background: colors.bg,
   },
-  snapshotTitle: {
-    fontSize: '16px',
-    fontWeight: 600,
-    marginBottom: '16px',
-    color: '#111827',
+  cardHeader: {
+    ...sectionHeaderBar,
+  },
+  body: {
+    padding: '1.5rem',
+    background: colors.bg,
+    fontFamily: type.fontFamily,
+    color: colors.ink,
+  },
+  section: {
+    marginBottom: '1.25rem',
+  },
+  sectionTitle: {
+    margin: '0 0 0.75rem',
+    fontSize: '1rem',
+    fontWeight: 650,
+    color: colors.navy,
   },
   snapshotTable: {
     width: '100%',
     borderCollapse: 'collapse',
-    fontSize: '14px',
-    color: '#374151',
-  },
-  snapshotLabelWide: {
-    padding: '8px 0',
-    fontWeight: 600,
-    width: '35%',
+    fontSize: '0.95rem',
+    color: colors.ink,
   },
   snapshotLabel: {
-    padding: '8px 0',
+    padding: '0.45rem 0',
     fontWeight: 600,
+    width: '35%',
+    color: colors.slate,
+    verticalAlign: 'top',
   },
   snapshotValue: {
-    padding: '8px 0',
+    padding: '0.45rem 0',
+    color: colors.ink,
   },
-  actionCard: {
-    background: '#f8fbff',
-    border: '1px solid #dbeafe',
-    borderLeft: '4px solid #2563eb',
-    borderRadius: '8px',
-    padding: '20px',
-    marginBottom: '24px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+  callout: {
+    background: colors.paleAccent,
+    border: `1px solid ${colors.hairline}`,
+    borderRadius: '6px',
+    marginBottom: '1.25rem',
+    overflow: 'hidden',
   },
-  actionTitle: {
-    fontSize: '16px',
-    fontWeight: 600,
-    marginBottom: '12px',
-    color: '#1e3a8a',
+  calloutHeader: {
+    ...sectionHeaderBar,
+    borderRadius: '6px 6px 0 0',
+    fontSize: '0.9rem',
   },
-  coachCard: {
-    background: '#f5faff',
-    border: '1px solid #dbeafe',
-    borderRadius: '8px',
-    padding: '20px',
-    marginBottom: '24px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-  },
-  coachTitle: {
-    fontSize: '16px',
-    fontWeight: 600,
-    marginBottom: '12px',
-    color: '#1e3a8a',
-  },
-  draftCard: {
-    background: '#fcfcfc',
-    border: '1px solid #e5e7eb',
-    borderRadius: '8px',
-    padding: '24px',
-    marginBottom: '24px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-  },
-  draftTitle: {
-    fontSize: '16px',
-    fontWeight: 600,
-    marginBottom: '16px',
-    color: '#111827',
+  calloutBody: {
+    padding: '1rem 1.25rem',
   },
   draftBody: {
     whiteSpace: 'pre-wrap',
-    fontSize: '14px',
-    lineHeight: 1.6,
-    color: '#374151',
+    fontSize: '0.95rem',
+    lineHeight: 1.5,
+    color: colors.ink,
     margin: 0,
-    fontFamily: 'Arial, sans-serif',
+    fontFamily: type.fontFamily,
+    padding: '0.75rem',
+    border: `1px solid ${colors.hairline}`,
+    borderRadius: '6px',
+    background: colors.bgMuted,
   },
   buttonStack: {
-    marginTop: '20px',
+    marginTop: '1rem',
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '0.75rem',
   },
   sendButton: {
-    display: 'block',
-    width: '100%',
-    textAlign: 'center',
-    padding: '12px 16px',
-    background: '#2563eb',
+    display: 'inline-block',
+    padding: '0.65rem 1.2rem',
+    background: colors.navy,
     color: '#ffffff',
     textDecoration: 'none',
     borderRadius: '6px',
     fontWeight: 600,
-    fontSize: '14px',
-    marginBottom: '12px',
-    boxSizing: 'border-box',
+    fontSize: '0.95rem',
+    fontFamily: type.fontFamily,
   },
   copyButton: {
-    display: 'block',
-    width: '100%',
-    textAlign: 'center',
-    padding: '12px 16px',
-    background: '#6b7280',
-    color: '#ffffff',
-    textDecoration: 'none',
+    padding: '0.65rem 1.2rem',
+    background: colors.bg,
+    color: colors.navy,
+    border: `1px solid ${colors.hairline}`,
     borderRadius: '6px',
     fontWeight: 600,
-    fontSize: '14px',
-    boxSizing: 'border-box',
-  },
-  followUpCard: {
-    background: '#ffffff',
-    border: '1px solid #e5e7eb',
-    borderRadius: '8px',
-    padding: '20px',
-    marginBottom: '24px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-  },
-  followUpTitle: {
-    fontSize: '16px',
-    fontWeight: 600,
-    marginBottom: '12px',
-    color: '#111827',
+    fontSize: '0.95rem',
+    fontFamily: type.fontFamily,
+    cursor: 'pointer',
   },
   list: {
     margin: 0,
-    paddingLeft: '20px',
-    lineHeight: 1.6,
-    fontSize: '14px',
-    color: '#374151',
+    paddingLeft: '1.25rem',
+    lineHeight: 1.5,
+    fontSize: '0.95rem',
+    color: colors.ink,
   },
-  listItem: {},
+  listItem: {
+    marginBottom: '0.35rem',
+  },
   listItemEmpty: {
     fontStyle: 'italic',
-    color: '#9ca3af',
+    color: colors.slateLight,
   },
 };
