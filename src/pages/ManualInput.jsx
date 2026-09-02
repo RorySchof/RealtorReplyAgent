@@ -9,6 +9,7 @@ export default function ManualInput() {
   const [agent, setAgent] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [buttonHovered, setButtonHovered] = useState(false);
 
   async function handleGenerate() {
     if (!text.trim()) return;
@@ -37,36 +38,46 @@ export default function ManualInput() {
     }
   }
 
+  const buttonDisabled = loading || !text.trim();
+
   return (
-    <div style={styles.container}>
-      <h1 style={styles.heading}>Manual Input</h1>
+    <div style={styles.page}>
+      <div style={styles.formCard}>
+        <h1 style={styles.heading}>Manual Input</h1>
 
-      <section style={styles.section}>
-        <h2 style={styles.sectionTitle}>Paste Email</h2>
-        <textarea
-          style={styles.textarea}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          rows={12}
-          placeholder="Paste the email here..."
-          disabled={loading}
-        />
-      </section>
+        <section style={styles.section}>
+          <h2 style={styles.sectionTitle}>Paste Email</h2>
+          <textarea
+            style={styles.textarea}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            rows={12}
+            placeholder="Paste the email here..."
+            disabled={loading}
+          />
+        </section>
 
-      <div style={styles.buttons}>
-        <button
-          type="button"
-          style={styles.button}
-          onClick={handleGenerate}
-          disabled={loading || !text.trim()}
-        >
-          Generate Reply
-        </button>
+        <div style={styles.buttons}>
+          <button
+            type="button"
+            style={{
+              ...styles.button,
+              ...(buttonHovered && !buttonDisabled ? styles.buttonHover : {}),
+              ...(buttonDisabled ? styles.buttonDisabled : {}),
+            }}
+            onClick={handleGenerate}
+            disabled={buttonDisabled}
+            onMouseEnter={() => setButtonHovered(true)}
+            onMouseLeave={() => setButtonHovered(false)}
+          >
+            Generate Reply
+          </button>
+        </div>
+
+        {loading && <p style={styles.status}>Generating reply...</p>}
+
+        {error && <p style={styles.error}>{error}</p>}
       </div>
-
-      {loading && <p style={styles.status}>Generating reply...</p>}
-
-      {error && <p style={styles.error}>{error}</p>}
 
       {agent && !loading && <ManualInputEmailPreview agent={agent} />}
     </div>
@@ -74,60 +85,92 @@ export default function ManualInput() {
 }
 
 const styles = {
-  container: {
+  page: {
     maxWidth: '640px',
     margin: '0 auto',
-    padding: '1.5rem',
-    fontFamily: 'system-ui, -apple-system, sans-serif',
-    color: '#222',
-    lineHeight: 1.5,
+    padding: '24px',
+    fontFamily: 'Arial, sans-serif',
+    color: '#374151',
+    lineHeight: 1.6,
+    background: '#f7f7f7',
+    minHeight: '100vh',
+    boxSizing: 'border-box',
+  },
+  formCard: {
+    background: '#fcfcfc',
+    border: '1px solid #e5e7eb',
+    borderRadius: '8px',
+    padding: '24px',
+    marginBottom: '24px',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
   },
   heading: {
-    fontSize: '1.5rem',
+    fontSize: '18px',
     fontWeight: 600,
-    marginBottom: '1.5rem',
+    color: '#111827',
+    margin: '0 0 24px',
   },
   section: {
-    marginBottom: '1.5rem',
+    marginBottom: '20px',
   },
   sectionTitle: {
-    fontSize: '1.1rem',
+    fontSize: '16px',
     fontWeight: 600,
-    marginBottom: '0.5rem',
+    marginBottom: '12px',
+    color: '#111827',
   },
   textarea: {
     width: '100%',
-    padding: '0.75rem',
-    fontSize: '1rem',
-    fontFamily: 'inherit',
-    lineHeight: 1.5,
-    border: '1px solid #ccc',
-    borderRadius: '4px',
+    padding: '12px 16px',
+    fontSize: '14px',
+    fontFamily: 'Arial, sans-serif',
+    lineHeight: 1.6,
+    color: '#374151',
+    border: '1px solid #e5e7eb',
+    borderRadius: '6px',
+    background: '#ffffff',
     resize: 'vertical',
     boxSizing: 'border-box',
+    outline: 'none',
   },
   buttons: {
     display: 'flex',
-    gap: '0.75rem',
+    gap: '12px',
     flexWrap: 'wrap',
-    marginBottom: '1.5rem',
   },
   button: {
-    padding: '0.6rem 1.2rem',
-    fontSize: '1rem',
+    display: 'block',
+    width: '100%',
+    textAlign: 'center',
+    padding: '12px 16px',
+    background: '#2563eb',
+    color: '#ffffff',
+    border: 'none',
+    borderRadius: '6px',
+    fontWeight: 600,
+    fontSize: '14px',
+    fontFamily: 'Arial, sans-serif',
     cursor: 'pointer',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    background: '#fff',
+    boxSizing: 'border-box',
+    transition: 'background 0.15s ease',
+  },
+  buttonHover: {
+    background: '#1d4ed8',
+  },
+  buttonDisabled: {
+    background: '#93c5fd',
+    cursor: 'not-allowed',
   },
   status: {
-    fontFamily: 'system-ui, -apple-system, sans-serif',
-    color: '#666',
-    marginBottom: '1rem',
+    fontFamily: 'Arial, sans-serif',
+    fontSize: '14px',
+    color: '#6b7280',
+    margin: '16px 0 0',
   },
   error: {
-    fontFamily: 'system-ui, -apple-system, sans-serif',
+    fontFamily: 'Arial, sans-serif',
+    fontSize: '14px',
     color: '#b00020',
-    marginBottom: '1rem',
+    margin: '16px 0 0',
   },
 };
