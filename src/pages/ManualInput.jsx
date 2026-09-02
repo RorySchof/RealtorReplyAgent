@@ -3,6 +3,34 @@
 import { useState } from 'react';
 import ManualInputEmailPreview from '../components/ManualInputEmailPreview';
 
+// Design tokens mirrored from Showing Notes (ShowingNotesForm / theme.js)
+const colors = {
+  ink: '#1A2331',
+  slate: '#4B5768',
+  slateLight: '#8592A3',
+  navy: '#1B3A4B',
+  navyDark: '#132A37',
+  hairline: '#DCE3E8',
+  bgMuted: '#F7F9FA',
+  bg: '#FFFFFF',
+  danger: '#9C3B3B',
+};
+
+const type = {
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif',
+};
+
+const sectionHeaderBar = {
+  background: colors.navy,
+  color: '#FFFFFF',
+  padding: '0.65rem 1.25rem',
+  fontSize: '0.95rem',
+  fontWeight: 600,
+  letterSpacing: '0.01em',
+  borderRadius: '6px 6px 0 0',
+};
+
 export default function ManualInput() {
   console.log("ManualInput rendered");
   const [text, setText] = useState('');
@@ -42,22 +70,25 @@ export default function ManualInput() {
 
   return (
     <div style={styles.page}>
-      <div style={styles.formCard}>
-        <h1 style={styles.heading}>Manual Input</h1>
+      <div style={styles.card}>
+        <div style={styles.cardHeader}>Manual Input</div>
+        <div style={styles.form}>
+          <label style={styles.label}>
+            Paste Email
+            <textarea
+              style={styles.textarea}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              rows={12}
+              placeholder="Paste the email here..."
+              disabled={loading}
+            />
+          </label>
 
-        <section style={styles.section}>
-          <h2 style={styles.sectionTitle}>Paste Email</h2>
-          <textarea
-            style={styles.textarea}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            rows={12}
-            placeholder="Paste the email here..."
-            disabled={loading}
-          />
-        </section>
+          {error ? <p style={styles.error}>{error}</p> : null}
 
-        <div style={styles.buttons}>
+          {loading ? <p style={styles.status}>Generating reply...</p> : null}
+
           <button
             type="button"
             style={{
@@ -73,10 +104,6 @@ export default function ManualInput() {
             Generate Reply
           </button>
         </div>
-
-        {loading && <p style={styles.status}>Generating reply...</p>}
-
-        {error && <p style={styles.error}>{error}</p>}
       </div>
 
       {agent && !loading && <ManualInputEmailPreview agent={agent} />}
@@ -88,89 +115,77 @@ const styles = {
   page: {
     maxWidth: '640px',
     margin: '0 auto',
-    padding: '24px',
-    fontFamily: 'Arial, sans-serif',
-    color: '#374151',
-    lineHeight: 1.6,
-    background: '#f7f7f7',
+    padding: '2rem 1.5rem',
+    fontFamily: type.fontFamily,
+    color: colors.ink,
+    lineHeight: 1.5,
+    background: colors.bgMuted,
     minHeight: '100vh',
     boxSizing: 'border-box',
   },
-  formCard: {
-    background: '#fcfcfc',
-    border: '1px solid #e5e7eb',
+  card: {
+    marginBottom: '2rem',
+    border: `1px solid ${colors.hairline}`,
     borderRadius: '8px',
-    padding: '24px',
-    marginBottom: '24px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+    overflow: 'hidden',
+    background: colors.bg,
   },
-  heading: {
-    fontSize: '18px',
-    fontWeight: 600,
-    color: '#111827',
-    margin: '0 0 24px',
+  cardHeader: {
+    ...sectionHeaderBar,
+    borderRadius: 0,
   },
-  section: {
-    marginBottom: '20px',
+  form: {
+    padding: '1.5rem',
+    background: colors.bg,
   },
-  sectionTitle: {
-    fontSize: '16px',
-    fontWeight: 600,
-    marginBottom: '12px',
-    color: '#111827',
+  label: {
+    display: 'block',
+    fontSize: '0.9rem',
+    fontWeight: 500,
+    marginBottom: '0.85rem',
+    color: colors.ink,
   },
   textarea: {
-    width: '100%',
-    padding: '12px 16px',
-    fontSize: '14px',
-    fontFamily: 'Arial, sans-serif',
-    lineHeight: 1.6,
-    color: '#374151',
-    border: '1px solid #e5e7eb',
-    borderRadius: '6px',
-    background: '#ffffff',
-    resize: 'vertical',
-    boxSizing: 'border-box',
-    outline: 'none',
-  },
-  buttons: {
-    display: 'flex',
-    gap: '12px',
-    flexWrap: 'wrap',
-  },
-  button: {
     display: 'block',
     width: '100%',
-    textAlign: 'center',
-    padding: '12px 16px',
-    background: '#2563eb',
-    color: '#ffffff',
+    marginTop: '0.35rem',
+    padding: '0.75rem',
+    fontSize: '0.95rem',
+    border: `1px solid ${colors.hairline}`,
+    borderRadius: '6px',
+    boxSizing: 'border-box',
+    fontFamily: type.fontFamily,
+    color: colors.ink,
+    lineHeight: 1.5,
+    resize: 'vertical',
+    background: colors.bg,
+  },
+  button: {
+    padding: '0.65rem 1.2rem',
+    fontSize: '0.95rem',
+    cursor: 'pointer',
     border: 'none',
     borderRadius: '6px',
+    background: colors.navy,
+    color: '#fff',
     fontWeight: 600,
-    fontSize: '14px',
-    fontFamily: 'Arial, sans-serif',
-    cursor: 'pointer',
-    boxSizing: 'border-box',
-    transition: 'background 0.15s ease',
+    fontFamily: type.fontFamily,
   },
   buttonHover: {
-    background: '#1d4ed8',
+    background: colors.navyDark,
   },
   buttonDisabled: {
-    background: '#93c5fd',
+    opacity: 0.55,
     cursor: 'not-allowed',
   },
   status: {
-    fontFamily: 'Arial, sans-serif',
-    fontSize: '14px',
-    color: '#6b7280',
-    margin: '16px 0 0',
+    color: colors.slate,
+    fontSize: '0.9rem',
+    margin: '0 0 0.75rem',
   },
   error: {
-    fontFamily: 'Arial, sans-serif',
-    fontSize: '14px',
-    color: '#b00020',
-    margin: '16px 0 0',
+    color: colors.danger,
+    fontSize: '0.9rem',
+    margin: '0 0 0.75rem',
   },
 };
